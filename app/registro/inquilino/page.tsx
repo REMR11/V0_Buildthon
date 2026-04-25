@@ -76,7 +76,9 @@ const step3Schema = z.object({
 });
 
 const step5Schema = z.object({
-  acceptedTerms: z.literal(true, { errorMap: () => ({ message: "Debes aceptar los términos para continuar" }) }),
+  acceptedTerms: z.boolean().refine((v) => v === true, {
+    message: "Debes aceptar los términos para continuar",
+  }),
 });
 
 type Step1Data = z.infer<typeof step1Schema>;

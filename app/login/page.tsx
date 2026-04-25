@@ -316,7 +316,7 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
     setLoading(true);
     setServerError("");
     try {
-      // Validate via our custom route first (for structured errors + rate limiting)
+      // Custom route handles bcrypt + rate limiting; returns ok:true on success
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -327,17 +327,8 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
         setServerError(json.error ?? "Error al iniciar sesión.");
         return;
       }
-      // Delegate session creation to NextAuth
-      const result = await signIn("credentials", {
-        email:    data.email,
-        password: data.password,
-        redirect: false,
-      });
-      if (result?.error) {
-        setServerError("Credenciales incorrectas. Verifica tu email y contraseña.");
-      } else {
-        window.location.href = "/";
-      }
+      // Session established — redirect to dashboard
+      window.location.href = "/";
     } finally {
       setLoading(false);
     }
@@ -345,7 +336,12 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
 
   const handleGoogle = async () => {
     setGL(true);
-    await signIn("google", { callbackUrl: "/" });
+    try {
+      await signIn("google", { callbackUrl: "/" });
+    } catch {
+      setServerError("Google OAuth no está configurado en este entorno.");
+      setGL(false);
+    }
   };
 
   return (
@@ -360,6 +356,16 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
         <p className="text-sm" style={{ color: T.muted }}>
           Ingresa a tu cuenta para continuar
         </p>
+      </div>
+
+      {/* Demo credentials hint */}
+      <div
+        className="rounded-xl px-4 py-3 mb-1 text-xs leading-relaxed"
+        style={{ background: T.infoBg, border: `1px solid ${T.border}`, color: T.muted }}
+      >
+        <span className="font-semibold" style={{ color: T.foreground }}>Modo demo:</span>{" "}
+        usa <span className="font-mono font-semibold">demo@nidoo.com</span> / contraseña{" "}
+        <span className="font-mono font-semibold">password123</span>
       </div>
 
       {serverError && <AlertBanner type="error" message={serverError} />}
@@ -465,7 +471,7 @@ function LoginView({ onForgot }: { onForgot: () => void }) {
   );
 }
 
-// ─── View: Recover password ───────────────────────────────────────────────
+// ─── View: Recover password ───────────────────────────────────────���───────
 function RecoverView({
   onBack,
   onOtpSent,
