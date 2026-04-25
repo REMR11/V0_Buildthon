@@ -118,7 +118,9 @@ function Microcopy({ children, green }: { children: React.ReactNode; green?: boo
 }
 
 function InputBase({
-  id, type = "text", placeholder, error, ...rest
+  id, type = "text", placeholder, error,
+  onFocus: externalFocus, onBlur: externalBlur,
+  ...rest
 }: React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean }) {
   return (
     <input
@@ -132,15 +134,25 @@ function InputBase({
         color: T.foreground,
         fontFamily: "inherit",
       }}
-      onFocus={e => { e.currentTarget.style.borderColor = T.primary; e.currentTarget.style.boxShadow = `0 0 0 3px ${T.primary}22`; }}
-      onBlur={e  => { e.currentTarget.style.borderColor = error ? T.danger : T.border; e.currentTarget.style.boxShadow = "none"; }}
+      onFocus={e => {
+        e.currentTarget.style.borderColor = T.primary;
+        e.currentTarget.style.boxShadow = `0 0 0 3px ${T.primary}22`;
+        externalFocus?.(e);
+      }}
+      onBlur={e => {
+        e.currentTarget.style.borderColor = error ? T.danger : T.border;
+        e.currentTarget.style.boxShadow = "none";
+        externalBlur?.(e);
+      }}
       {...rest}
     />
   );
 }
 
 function SelectBase({
-  id, children, error, ...rest
+  id, children, error,
+  onFocus: externalFocus, onBlur: externalBlur,
+  ...rest
 }: React.SelectHTMLAttributes<HTMLSelectElement> & { error?: boolean }) {
   return (
     <select
@@ -153,8 +165,16 @@ function SelectBase({
         fontFamily: "inherit",
         cursor: "pointer",
       }}
-      onFocus={e => { e.currentTarget.style.borderColor = T.primary; e.currentTarget.style.boxShadow = `0 0 0 3px ${T.primary}22`; }}
-      onBlur={e  => { e.currentTarget.style.borderColor = error ? T.danger : T.border; e.currentTarget.style.boxShadow = "none"; }}
+      onFocus={e => {
+        e.currentTarget.style.borderColor = T.primary;
+        e.currentTarget.style.boxShadow = `0 0 0 3px ${T.primary}22`;
+        externalFocus?.(e);
+      }}
+      onBlur={e => {
+        e.currentTarget.style.borderColor = error ? T.danger : T.border;
+        e.currentTarget.style.boxShadow = "none";
+        externalBlur?.(e);
+      }}
       {...rest}
     >
       {children}
@@ -553,9 +573,21 @@ function Step2({ onBack, onNext }: { onBack: () => void; onNext: (d: Step2Data) 
             color: T.foreground,
             fontFamily: "inherit",
           }}
-          onFocus={e => { e.currentTarget.style.borderColor = T.primary; e.currentTarget.style.boxShadow = `0 0 0 3px ${T.primary}22`; }}
-          onBlur={e  => { e.currentTarget.style.borderColor = errors.bio ? T.danger : T.border; e.currentTarget.style.boxShadow = "none"; }}
-          {...register("bio")}
+          {...(() => {
+            const { onBlur: rhfBlur, ...regRest } = register("bio");
+            return {
+              ...regRest,
+              onFocus: (e: React.FocusEvent<HTMLTextAreaElement>) => {
+                e.currentTarget.style.borderColor = T.primary;
+                e.currentTarget.style.boxShadow = `0 0 0 3px ${T.primary}22`;
+              },
+              onBlur: (e: React.FocusEvent<HTMLTextAreaElement>) => {
+                e.currentTarget.style.borderColor = errors.bio ? T.danger : T.border;
+                e.currentTarget.style.boxShadow = "none";
+                rhfBlur(e);
+              },
+            };
+          })()}
         />
         <div className="flex justify-between items-center mt-1">
           <Microcopy>Cuanto mas honesta sea tu presentacion, mas probable que te acepten.</Microcopy>

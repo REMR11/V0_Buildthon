@@ -112,7 +112,9 @@ function Microcopy({ children }: { children: React.ReactNode }) {
 }
 
 function InputBase({
-  id, type = "text", placeholder, error, ...rest
+  id, type = "text", placeholder, error,
+  onFocus: externalFocus, onBlur: externalBlur,
+  ...rest
 }: React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean }) {
   return (
     <input
@@ -126,15 +128,25 @@ function InputBase({
         color: TOKEN.foreground,
         fontFamily: "inherit",
       }}
-      onFocus={e => { e.currentTarget.style.borderColor = TOKEN.primary; e.currentTarget.style.boxShadow = `0 0 0 3px ${TOKEN.primary}22`; }}
-      onBlur={e  => { e.currentTarget.style.borderColor = error ? "#dc2626" : TOKEN.border; e.currentTarget.style.boxShadow = "none"; }}
+      onFocus={e => {
+        e.currentTarget.style.borderColor = TOKEN.primary;
+        e.currentTarget.style.boxShadow = `0 0 0 3px ${TOKEN.primary}22`;
+        externalFocus?.(e);
+      }}
+      onBlur={e => {
+        e.currentTarget.style.borderColor = error ? "#dc2626" : TOKEN.border;
+        e.currentTarget.style.boxShadow = "none";
+        externalBlur?.(e);
+      }}
       {...rest}
     />
   );
 }
 
 function SelectBase({
-  id, children, error, ...rest
+  id, children, error,
+  onFocus: externalFocus, onBlur: externalBlur,
+  ...rest
 }: React.SelectHTMLAttributes<HTMLSelectElement> & { error?: boolean }) {
   return (
     <select
@@ -147,8 +159,16 @@ function SelectBase({
         fontFamily: "inherit",
         cursor: "pointer",
       }}
-      onFocus={e => { e.currentTarget.style.borderColor = TOKEN.primary; e.currentTarget.style.boxShadow = `0 0 0 3px ${TOKEN.primary}22`; }}
-      onBlur={e  => { e.currentTarget.style.borderColor = error ? "#dc2626" : TOKEN.border; e.currentTarget.style.boxShadow = "none"; }}
+      onFocus={e => {
+        e.currentTarget.style.borderColor = TOKEN.primary;
+        e.currentTarget.style.boxShadow = `0 0 0 3px ${TOKEN.primary}22`;
+        externalFocus?.(e);
+      }}
+      onBlur={e => {
+        e.currentTarget.style.borderColor = error ? "#dc2626" : TOKEN.border;
+        e.currentTarget.style.boxShadow = "none";
+        externalBlur?.(e);
+      }}
       {...rest}
     >
       {children}

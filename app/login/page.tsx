@@ -104,6 +104,7 @@ function InputBase({
   id, type = "text", placeholder, error,
   ...rest
 }: React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean }) {
+  const { onFocus: externalFocus, onBlur: externalBlur, ...restProps } = rest;
   return (
     <input
       id={id}
@@ -120,9 +121,15 @@ function InputBase({
         fontSize: 15,
         transition: "border-color 0.15s",
       }}
-      onFocus={e  => { e.currentTarget.style.borderColor = error ? T.error : T.borderFocus; }}
-      onBlur={e   => { e.currentTarget.style.borderColor = error ? T.error : T.border; }}
-      {...rest}
+      onFocus={e => {
+        e.currentTarget.style.borderColor = error ? T.error : T.borderFocus;
+        externalFocus?.(e);
+      }}
+      onBlur={e => {
+        e.currentTarget.style.borderColor = error ? T.error : T.border;
+        externalBlur?.(e);
+      }}
+      {...restProps}
     />
   );
 }
@@ -695,7 +702,7 @@ function OtpView({
   );
 }
 
-// ─── View: Success ────────────────────────────────────────────────────────
+// ─── View: Success ────────────────────────────────────────────────���───────
 function SuccessView() {
   return (
     <div className="flex flex-col items-center text-center">
