@@ -32,7 +32,7 @@ type Method = "email" | "sms";
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const COLORS: Record<Role, { primary: string; primaryHov: string; light: string }> = {
   propietario: { primary: "#D85A30", primaryHov: "#BF4D26", light: "#FEF3EE" },
-  inquilino:   { primary: "#1D9E75", primaryHov: "#17856200", light: "#E8F7F2" },
+  inquilino:   { primary: "#1D9E75", primaryHov: "#178562", light: "#E8F7F2" },
 };
 
 // Static neutrals
@@ -89,11 +89,10 @@ function FieldError({ message }: { message?: string }) {
 }
 
 function InputBase({
-  id, type = "text", placeholder, error,
+  id, type = "text", placeholder, error, focusColor = "#D85A30",
   onFocus: externalFocus, onBlur: externalBlur,
   ...rest
-}: React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean }) {
-  const primary = "#D85A30";
+}: React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean; focusColor?: string }) {
   return (
     <input
       id={id}
@@ -111,8 +110,8 @@ function InputBase({
         transition: "border-color 0.15s, box-shadow 0.15s",
       }}
       onFocus={e => {
-        e.currentTarget.style.borderColor = error ? N.error : primary;
-        e.currentTarget.style.boxShadow  = `0 0 0 3px ${primary}22`;
+        e.currentTarget.style.borderColor = error ? N.error : focusColor;
+        e.currentTarget.style.boxShadow  = `0 0 0 3px ${focusColor}22`;
         externalFocus?.(e);
       }}
       onBlur={e => {
@@ -390,6 +389,7 @@ function LoginView({
   onRoleChange: (r: Role) => void;
   onForgot: () => void;
 }) {
+  const router = useRouter();
   const c = COLORS[role];
   const [showPwd, setShowPwd]         = useState(false);
   const [loading, setLoading]         = useState(false);
@@ -425,7 +425,7 @@ function LoginView({
         }
         return;
       }
-      window.location.href = "/";
+      router.push(`/dashboard/${role}`);
     } finally {
       setLoading(false);
     }
@@ -487,6 +487,7 @@ function LoginView({
               type="email"
               placeholder="tu@email.com"
               error={!!errors.email}
+              focusColor={c.primary}
               style={{ paddingLeft: 38 }}
               disabled={locked}
               {...register("email")}
@@ -514,6 +515,7 @@ function LoginView({
               type={showPwd ? "text" : "password"}
               placeholder="••••••••"
               error={!!errors.password}
+              focusColor={c.primary}
               style={{ paddingLeft: 38, paddingRight: 42 }}
               disabled={locked}
               {...register("password")}
