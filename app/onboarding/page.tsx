@@ -4,23 +4,20 @@ import { useState, useCallback, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useDropzone } from "react-dropzone";
+
 import {
   Eye,
   EyeOff,
-  Lock,
-  Upload,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  MapPin,
   User,
   Home,
-  ShieldCheck,
   AlertCircle,
   Loader2,
 } from "lucide-react";
 import LocationPicker, { type LocationData } from "@/components/LocationPicker";
+import IdentityStep, { type VerificationResult } from "@/app/registro/propietario/steps/IdentityStep";
 
 // ─── Design tokens (mirror globals.css) ───────────────────────────────────────
 const TOKEN = {
@@ -86,7 +83,6 @@ const step3Schema = z.object({
 
 type Step1Data  = z.infer<typeof step1Schema>;
 type Step3Data  = z.infer<typeof step3Schema>;
-type FileUpload = { front: File | null; back: File | null; selfie: File | null };
 interface Step3Result { formData: Step3Data; location: LocationData | null; }
 
 // ─── Shared UI primitives ─────────────────────────────────────────────────────
@@ -263,55 +259,6 @@ function StepNav({
   );
 }
 
-// ─── Upload zone ──────────────────────────────────────────────────────────────
-function UploadZone({
-  label,
-  file,
-  onFile,
-  accept = { "image/*": [] },
-}: {
-  label: string;
-  file: File | null;
-  onFile: (f: File) => void;
-  accept?: Record<string, string[]>;
-}) {
-  const onDrop = useCallback((accepted: File[]) => { if (accepted[0]) onFile(accepted[0]); }, [onFile]);
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept, maxFiles: 1 });
-  const preview = file ? URL.createObjectURL(file) : null;
-
-  return (
-    <div
-      {...getRootProps()}
-      className="relative flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed cursor-pointer transition-all p-5 min-h-[120px]"
-      style={{
-        borderColor: isDragActive ? TOKEN.primary : TOKEN.border,
-        background: isDragActive ? `${TOKEN.primary}11` : TOKEN.bg,
-      }}
-    >
-      <input {...getInputProps()} />
-      {preview ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview} alt={label} className="max-h-24 rounded-lg object-cover" />
-      ) : (
-        <>
-          <Upload size={22} style={{ color: TOKEN.primary }} />
-          <span className="text-xs font-semibold text-center" style={{ color: TOKEN.foreground }}>{label}</span>
-          <span className="text-[11px]" style={{ color: TOKEN.muted }}>
-            {isDragActive ? "Suelta aquí" : "Arrastra o toca para subir"}
-          </span>
-        </>
-      )}
-      {file && (
-        <span className="absolute top-2 right-2 flex items-center gap-1 text-[10px] font-semibold text-green-700 bg-green-50 rounded-full px-2 py-0.5">
-          <CheckCircle2 size={10} /> Listo
-        </span>
-      )}
-    </div>
-  );
-}
-
-
-
 // ─── STEP 1 ───────────────────────────────────────────────────────────────────
 function Step1({ onNext }: { onNext: (data: Step1Data) => void }) {
   const [showPwd, setShowPwd] = useState(false);
@@ -445,89 +392,7 @@ function Step1({ onNext }: { onNext: (data: Step1Data) => void }) {
   );
 }
 
-// ─── STEP 2 ───────────────────────────────────────────────────────────────────
-function Step2({
-  files,
-  setFiles,
-  onBack,
-  onNext,
-}: {
-  files: FileUpload;
-  setFiles: React.Dispatch<React.SetStateAction<FileUpload>>;
-  onBack: () => void;
-  onNext: () => void;
-}) {
-  const [error, setError] = useState("");
 
-  const handleNext = () => {
-    if (!files.front || !files.back || !files.selfie) {
-      setError("Por favor sube los tres documentos requeridos.");
-      return;
-    }
-    setError("");
-    onNext();
-  };
-
-  return (
-    <div>
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `${TOKEN.primary}22` }}>
-          <ShieldCheck size={18} style={{ color: TOKEN.primary }} />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold font-serif" style={{ color: TOKEN.foreground }}>Verificación de identidad</h2>
-          <p className="text-sm" style={{ color: TOKEN.muted }}>Requerida para garantizar la seguridad de todos</p>
-        </div>
-      </div>
-
-      {/* Disclaimer */}
-      <div className="flex items-start gap-3 rounded-2xl p-4 mb-6" style={{ background: TOKEN.mutedBg }}>
-        <Lock size={18} style={{ color: TOKEN.primary, flexShrink: 0, marginTop: 2 }} />
-        <p className="text-sm leading-relaxed" style={{ color: TOKEN.foreground }}>
-          <span className="font-semibold">Tus datos están cifrados</span> y solo se usan para verificar tu identidad. Nunca los compartimos con terceros.
-        </p>
-      </div>
-
-      {/* Upload zones */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <div>
-          <Label>DUI / DNI / INE — Frente</Label>
-          <UploadZone
-            label="Parte frontal del documento"
-            file={files.front}
-            onFile={f => setFiles(prev => ({ ...prev, front: f }))}
-          />
-        </div>
-        <div>
-          <Label>DUI / DNI / INE — Reverso</Label>
-          <UploadZone
-            label="Parte trasera del documento"
-            file={files.back}
-            onFile={f => setFiles(prev => ({ ...prev, back: f }))}
-          />
-        </div>
-      </div>
-
-      <div className="mb-2">
-        <Label>Selfie de verificación</Label>
-        <UploadZone
-          label="Tómate una foto con tu documento en mano"
-          file={files.selfie}
-          onFile={f => setFiles(prev => ({ ...prev, selfie: f }))}
-        />
-        <Microcopy>Asegúrate de que tu cara y el documento sean claramente visibles.</Microcopy>
-      </div>
-
-      {error && (
-        <p className="flex items-center gap-1.5 mt-3 text-sm font-medium text-red-600">
-          <AlertCircle size={14} /> {error}
-        </p>
-      )}
-
-      <StepNav step={1} onBack={onBack} onNext={handleNext} />
-    </div>
-  );
-}
 
 // ─── STEP 3 ───────────────────────────────────────────────────────────────────
 function Step3({
@@ -805,11 +670,11 @@ function Step4({
 
 // ─── ROOT CONTROLLER ──────────────────────────────────────────────────────────
 export default function OnboardingPage() {
-  const [step, setStep]         = useState(0);
-  const [step1Data, setStep1Data]   = useState<Step1Data | null>(null);
-  const [step3Data, setStep3Data]   = useState<Step3Data | null>(null);
-  const [locationData, setLocationData] = useState<LocationData | null>(null);
-  const [files, setFiles]       = useState<FileUpload>({ front: null, back: null, selfie: null });
+  const [step, setStep]                   = useState(0);
+  const [step1Data, setStep1Data]         = useState<Step1Data | null>(null);
+  const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
+  const [step3Data, setStep3Data]         = useState<Step3Data | null>(null);
+  const [locationData, setLocationData]   = useState<LocationData | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const scrollTop = () => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -844,11 +709,10 @@ export default function OnboardingPage() {
             />
           )}
           {step === 1 && (
-            <Step2
-              files={files}
-              setFiles={setFiles}
+            <IdentityStep
+              registeredName={step1Data?.fullName}
               onBack={back}
-              onNext={next}
+              onNext={result => { setVerificationResult(result); next(); }}
             />
           )}
           {step === 2 && (
