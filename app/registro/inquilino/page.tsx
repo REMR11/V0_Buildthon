@@ -12,6 +12,7 @@ import {
   Info,
 } from "lucide-react";
 import Link from "next/link";
+import IdentityVerificationStep, { type VerificationResult } from "@/components/onboarding/IdentityVerificationStep";
 
 // ─── Design tokens (teal variant) ────────────────────────────────────────────
 const T = {
@@ -85,7 +86,7 @@ type Step1Data = z.infer<typeof step1Schema>;
 type Step2Data = z.infer<typeof step2Schema>;
 type Step3Data = z.infer<typeof step3Schema>;
 type Step5Data = z.infer<typeof step5Schema>;
-type FileBundle = { front: File | null; back: File | null; selfie: File | null };
+type FileBundle = { front: File | null; back: File | null; selfie: File | null; result?: VerificationResult | null };
 type RefData    = { name: string; phone: string };
 
 // ─── Shared primitives ────────────────────────────────────────────────────────
@@ -758,94 +759,26 @@ function Step3({ onBack, onNext }: { onBack: () => void; onNext: (d: Step3Data) 
 function Step4({
   onBack,
   onNext,
+  registeredName,
 }: {
   onBack: () => void;
   onNext: (files: FileBundle, ref: RefData) => void;
+  registeredName?: string;
 }) {
-  const [files, setFiles] = useState<FileBundle>({ front: null, back: null, selfie: null });
-  const [ref, setRef]     = useState<RefData>({ name: "", phone: "" });
-  const [error, setError] = useState("");
-
-  function handleNext() {
-    if (!files.front || !files.back || !files.selfie) {
-      setError("Sube los tres documentos para continuar.");
-      return;
-    }
-    setError("");
-    onNext(files, ref);
-  }
+  const handleComplete = (result: VerificationResult) => {
+    onNext(
+      { front: result.idFrontFile, back: result.idBackFile, selfie: result.selfieFile, result },
+      { name: "", phone: "" },
+    );
+  };
 
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `${T.primary}22` }}>
-          <ShieldCheck size={18} style={{ color: T.primary }} />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold font-serif" style={{ color: T.foreground }}>Verificacion de identidad</h2>
-          <p className="text-sm" style={{ color: T.muted }}>Nos ayuda a crear una comunidad segura para todos.</p>
-        </div>
-      </div>
-
-      {/* ID front + back */}
-      <div className="mb-4">
-        <Label>Documento de identidad (DUI / DNI / INE)</Label>
-        <div className="grid grid-cols-2 gap-3">
-          <UploadZone label="Frente" file={files.front} onFile={f => setFiles(v => ({ ...v, front: f }))} />
-          <UploadZone label="Reverso" file={files.back}  onFile={f => setFiles(v => ({ ...v, back: f }))} />
-        </div>
-      </div>
-
-      {/* Selfie */}
-      <div className="mb-5">
-        <Label>Selfie</Label>
-        <UploadZone
-          label="Foto de tu rostro"
-          hint="Sin filtros ni lentes de sol."
-          file={files.selfie}
-          onFile={f => setFiles(v => ({ ...v, selfie: f }))}
-        />
-      </div>
-
-      {/* Optional reference */}
-      <div className="mb-5 rounded-2xl p-4" style={{ background: T.secondary, border: `1.5px solid ${T.border}` }}>
-        <div className="flex items-start gap-2 mb-3">
-          <Info size={15} style={{ color: T.primary, flexShrink: 0, marginTop: 1 }} />
-          <p className="text-xs font-semibold" style={{ color: T.primary }}>
-            Una referencia aumenta hasta 3x tus posibilidades de ser aceptado/a.
-          </p>
-        </div>
-        <p className="text-xs mb-3" style={{ color: T.muted }}>Referencia personal (opcional)</p>
-        <div className="flex flex-col gap-2">
-          <InputBase
-            placeholder="Nombre completo de tu referencia"
-            value={ref.name}
-            onChange={e => setRef(v => ({ ...v, name: e.target.value }))}
-          />
-          <InputBase
-            type="tel"
-            placeholder="Telefono de contacto"
-            value={ref.phone}
-            onChange={e => setRef(v => ({ ...v, phone: e.target.value }))}
-          />
-        </div>
-      </div>
-
-      {/* Encryption disclaimer */}
-      <div
-        className="flex items-start gap-3 rounded-2xl p-4 mb-2"
-        style={{ background: T.mutedBg, border: `1.5px solid ${T.border}` }}
-      >
-        <Lock size={16} style={{ color: T.muted, flexShrink: 0, marginTop: 1 }} />
-        <p className="text-xs leading-relaxed" style={{ color: T.muted }}>
-          Tus documentos estan cifrados y solo se comparten con el propietario que tu aceptes.
-        </p>
-      </div>
-
-      {error && <FieldError message={error} />}
-
-      <StepNav step={3} onBack={onBack} onNext={handleNext} nextLabel="Continuar" />
-    </div>
+    <IdentityVerificationStep
+      role="inquilino"
+      registeredName={registeredName}
+      onComplete={handleComplete}
+      onBack={onBack}
+    />
   );
 }
 
@@ -1152,6 +1085,7 @@ export default function InquilinoPage() {
             <Step4
               onBack={back}
               onNext={(f, r) => { setFiles(f); setRef(r); next(); }}
+              registeredName={step1?.fullName}
             />
           )}
           {step === 4 && step1 && step2 && step3 && (
