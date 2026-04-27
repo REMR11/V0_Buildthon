@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Menu, X, Map } from "lucide-react";
 
 export default function Navbar() {
@@ -39,12 +40,12 @@ export default function Navbar() {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-3">
-          <a
-            href="#"
+          <Link
+            href="/login"
             className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
           >
             Iniciar sesión
-          </a>
+          </Link>
           <a
             href="/registro"
             className="text-sm font-semibold bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-full transition-colors"
@@ -83,6 +84,9 @@ export default function Navbar() {
             <Map size={14} />
             Explorar mapa
           </a>
+          <Link href="/login" onClick={() => setOpen(false)} className="text-foreground/70 hover:text-primary transition-colors font-medium">
+            Iniciar sesión
+          </Link>
           <a href="/registro" className="bg-primary hover:bg-primary-hover text-white text-center px-4 py-2 rounded-full transition-colors font-semibold">
             Publicar cuarto
           </a>

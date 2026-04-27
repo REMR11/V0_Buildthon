@@ -1,4 +1,4 @@
-import { BadgeCheck, FileSignature, ShieldCheck, Star } from "lucide-react";
+import { BadgeCheck, FilePenLine, ShieldCheck, Star } from "lucide-react";
 import Image from "next/image";
 
 const signals = [
@@ -9,7 +9,7 @@ const signals = [
       "Todos los usuarios pasan por un proceso de verificación de identidad antes de publicar o rentar.",
   },
   {
-    icon: FileSignature,
+    icon: FilePenLine,
     title: "Contrato digital",
     description:
       "Genera y firma contratos de arrendamiento 100% legales en minutos, sin salir de la plataforma.",

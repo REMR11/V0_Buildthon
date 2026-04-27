@@ -71,7 +71,7 @@ export default function OnboardingFlow() {
         <Step1BasicInfo data={step1} onChange={setStep1} onNext={goNext} />
       )}
       {step === 2 && (
-        <Step2Identity data={step2} onChange={setStep2} onNext={goNext} onBack={goBack} />
+        <Step2Identity data={step2} onChange={setStep2} onNext={goNext} onBack={goBack} registeredName={step1.fullName} />
       )}
       {step === 3 && (
         <Step3HouseProfile data={step3} onChange={setStep3} onNext={goNext} onBack={goBack} />
@@ -84,7 +84,6 @@ export default function OnboardingFlow() {
           onBack={goBack}
           onSubmit={() => {
             // In production: POST to /api/registro
-            console.log("[v0] Onboarding submitted", { step1, step3 });
           }}
         />
       )}
