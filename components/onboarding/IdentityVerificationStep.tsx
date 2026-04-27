@@ -531,16 +531,16 @@ export default function IdentityVerificationStep({
           <CameraCapture
             mode="document"
             label="Frente del documento de identidad"
+            sublabel="Mantén el documento horizontal y bien iluminado."
             onCapture={handleFront}
-            onUploadFallback={handleFront}
           />
         )}
         {subStep === "back" && (
           <CameraCapture
             mode="document"
             label="Reverso del documento de identidad"
+            sublabel="Muestra el reverso completo sin obstrucciones."
             onCapture={handleBack}
-            onUploadFallback={handleBack}
           />
         )}
         {subStep === "selfie" && (
@@ -548,11 +548,15 @@ export default function IdentityVerificationStep({
             mode="selfie"
             label={
               role === "propietario"
-                ? "Selfie de verificacion (mira a la camara)"
-                : "Selfie sosteniendo tu documento de identidad"
+                ? "Selfie de verificacion"
+                : "Selfie sosteniendo tu documento"
+            }
+            sublabel={
+              role === "propietario"
+                ? "Mira directamente a la camara, sin filtros ni lentes."
+                : "Sostén el documento junto a tu cara con buena iluminación."
             }
             onCapture={handleSelfie}
-            onUploadFallback={handleSelfie}
           />
         )}
 
