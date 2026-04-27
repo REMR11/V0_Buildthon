@@ -5,14 +5,14 @@ import Link from "next/link";
 import { Home, Search, ArrowRight } from "lucide-react";
 
 const TOKEN = {
-  primary:     "#D85A30",
-  teal:        "#1D9E75",
-  bg:          "#fdf8f4",
-  card:        "#ffffff",
-  border:      "#e2cbb5",
-  muted:       "#9e7a5a",
-  mutedBg:     "#f0e4d7",
-  foreground:  "#2c1a0e",
+  primary: "#D85A30",
+  teal: "#1D9E75",
+  bg: "#fdf8f4",
+  card: "#ffffff",
+  border: "#e2cbb5",
+  muted: "#9e7a5a",
+  mutedBg: "#f0e4d7",
+  foreground: "#2c1a0e",
 };
 
 export default function RegistroPage() {
@@ -119,7 +119,7 @@ export default function RegistroPage() {
 
       <p className="mt-8 text-xs" style={{ color: TOKEN.muted }}>
         ¿Ya tienes cuenta?{" "}
-        <Link href="#" className="font-semibold underline underline-offset-2" style={{ color: TOKEN.foreground }}>
+        <Link href="/login" className="font-semibold underline underline-offset-2" style={{ color: TOKEN.foreground }}>
           Inicia sesión
         </Link>
       </p>
