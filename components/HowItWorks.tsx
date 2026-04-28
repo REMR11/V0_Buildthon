@@ -8,6 +8,8 @@ import {
   Search,
   MessageCircle,
   KeyRound,
+  ArrowRight,
+  Check,
 } from "lucide-react";
 
 const ownerSteps = [
@@ -16,39 +18,45 @@ const ownerSteps = [
     title: "Publica tu cuarto",
     description:
       "Sube fotos, describe el espacio y define tus condiciones. Todo en menos de 10 minutos.",
+    benefits: ["Gratis", "Sin comisiones ocultas"],
   },
   {
     icon: FileText,
     title: "Recibe solicitudes",
     description:
       "Revisa perfiles verificados de posibles inquilinos y elige al que mejor se ajuste a ti.",
+    benefits: ["Perfiles verificados", "Chat integrado"],
   },
   {
     icon: CreditCard,
     title: "Firma y cobra seguro",
     description:
-      "Contrato digital y pagos mensuales automáticos. Sin trámites engorrosos ni riesgos.",
+      "Contrato digital y pagos mensuales automaticos. Sin tramites engorrosos ni riesgos.",
+    benefits: ["Contrato legal", "Depositos protegidos"],
   },
 ];
 
 const tenantSteps = [
   {
     icon: Search,
-    title: "Busca tu habitación",
+    title: "Busca tu habitacion",
     description:
-      "Filtra por ciudad, precio, y características. Sin grupos de WhatsApp ni información falsa.",
+      "Filtra por ciudad, precio, y caracteristicas. Sin grupos de WhatsApp ni informacion falsa.",
+    benefits: ["Fotos reales", "Precios transparentes"],
   },
   {
     icon: MessageCircle,
     title: "Contacta al propietario",
     description:
       "Chatea directamente, agenda visitas y resuelve todas tus dudas antes de comprometerte.",
+    benefits: ["Respuesta rapida", "Sin intermediarios"],
   },
   {
     icon: KeyRound,
     title: "Mudate con tranquilidad",
     description:
-      "Firma el contrato digital y paga en línea. Tu nuevo hogar en pocos días.",
+      "Firma el contrato digital y paga en linea. Tu nuevo hogar en pocos dias.",
+    benefits: ["Proceso 100% digital", "Soporte 24/7"],
   },
 ];
 
@@ -66,7 +74,7 @@ export default function HowItWorks() {
             Simple y transparente
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            ¿Cómo funciona Nidoo?
+            Como funciona Nidoo?
           </h2>
           <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
             Ya seas propietario o inquilino, el proceso es sencillo, seguro y
@@ -79,9 +87,9 @@ export default function HowItWorks() {
           <div className="flex bg-muted-bg rounded-full p-1 gap-1">
             <button
               onClick={() => setRole("owner")}
-              className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 role === "owner"
-                  ? "bg-primary text-white shadow-sm"
+                  ? "bg-primary text-white shadow-primary-sm"
                   : "text-muted hover:text-foreground"
               }`}
             >
@@ -89,9 +97,9 @@ export default function HowItWorks() {
             </button>
             <button
               onClick={() => setRole("tenant")}
-              className={`px-6 py-2 rounded-full text-sm font-semibold transition-colors ${
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 role === "tenant"
-                  ? "bg-primary text-white shadow-sm"
+                  ? "bg-primary text-white shadow-primary-sm"
                   : "text-muted hover:text-foreground"
               }`}
             >
@@ -100,34 +108,89 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* Steps */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={index}
-                className="relative bg-card rounded-2xl p-8 shadow-sm border border-border flex flex-col gap-5"
-              >
-                {/* Step number */}
-                <span className="absolute top-6 right-6 text-5xl font-bold text-muted-bg select-none leading-none">
-                  {index + 1}
-                </span>
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Icon size={22} className="text-primary" />
+        {/* Steps with connector line */}
+        <div className="relative">
+          {/* Connector line - hidden on mobile */}
+          <div className="hidden md:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          
+          {/* Arrow connectors between steps */}
+          <div className="hidden md:flex absolute top-[5.5rem] left-0 right-0 justify-around px-24">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <ArrowRight size={16} className="text-primary" />
+            </div>
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <ArrowRight size={16} className="text-primary" />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <div
+                  key={`${role}-${index}`}
+                  className="relative bg-card rounded-2xl p-8 shadow-sm border border-border flex flex-col gap-5 hover:shadow-primary-sm transition-shadow animate-fade-in-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {/* Step number badge */}
+                  <div className="absolute -top-4 left-8 w-8 h-8 rounded-full bg-primary text-white font-bold text-sm flex items-center justify-center shadow-primary-sm">
+                    {index + 1}
+                  </div>
+
+                  {/* Large watermark number */}
+                  <span className="absolute top-4 right-6 text-6xl font-bold text-muted-bg/50 select-none leading-none">
+                    {index + 1}
+                  </span>
+
+                  {/* Icon */}
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center mt-2">
+                    <Icon size={26} className="text-primary" />
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-xl text-foreground mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-muted leading-relaxed text-sm mb-4">
+                      {step.description}
+                    </p>
+
+                    {/* Benefits list */}
+                    <ul className="space-y-2">
+                      {step.benefits.map((benefit, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm">
+                          <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <Check size={12} className="text-green-600" />
+                          </div>
+                          <span className="text-foreground/80">{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Mobile connector arrow */}
+                  {index < steps.length - 1 && (
+                    <div className="md:hidden flex justify-center -mb-12 relative z-10">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center rotate-90">
+                        <ArrowRight size={16} className="text-primary" />
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg text-foreground mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-muted leading-relaxed text-sm">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+
+        {/* CTA based on role */}
+        <div className="text-center mt-12">
+          <a
+            href={role === "owner" ? "/publicar" : "/explorar"}
+            className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-8 py-4 rounded-full transition-all shadow-primary-md hover:shadow-primary-lg hover:-translate-y-0.5"
+          >
+            <span>{role === "owner" ? "Publicar mi cuarto gratis" : "Buscar habitaciones"}</span>
+            <ArrowRight size={18} />
+          </a>
         </div>
       </div>
     </section>

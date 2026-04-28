@@ -1,25 +1,102 @@
 "use client";
 
 import Image from "next/image";
-import { Search, MapPin, Calendar, Wallet, Users, Home, Globe } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Search, MapPin, Calendar, Wallet, Users, Home, Globe, TrendingUp } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 
 const stats = [
-  { icon: Home, value: "+5,000", label: "habitaciones" },
-  { icon: Users, value: "+12,000", label: "inquilinos felices" },
-  { icon: Globe, value: "5 países", label: "en LATAM" },
+  { icon: Home, value: 5000, prefix: "+", suffix: "", label: "habitaciones" },
+  { icon: Users, value: 12000, prefix: "+", suffix: "", label: "inquilinos felices" },
+  { icon: Globe, value: 5, prefix: "", suffix: " países", label: "en LATAM" },
 ];
 
 const cities = [
-  "Guadalajara",
-  "Bogotá",
-  "Lima",
-  "Medellín",
-  "San Salvador",
+  { name: "Guadalajara", flag: "MX", country: "México" },
+  { name: "Bogotá", flag: "CO", country: "Colombia" },
+  { name: "Lima", flag: "PE", country: "Perú" },
+  { name: "Medellín", flag: "CO", country: "Colombia" },
+  { name: "San Salvador", flag: "SV", country: "El Salvador" },
 ];
 
+const popularSearches = [
+  "Cerca de la UDG",
+  "Zona T Bogotá",
+  "Miraflores Lima",
+  "El Poblado",
+];
+
+const recentUsers = [
+  { name: "Ana", city: "Guadalajara", time: "hace 2 días", avatar: "/images/avatars/avatar-1.jpg" },
+  { name: "Carlos", city: "Bogotá", time: "hace 5 horas", avatar: "/images/avatars/avatar-2.jpg" },
+  { name: "María", city: "Lima", time: "ayer", avatar: "/images/avatars/avatar-3.jpg" },
+];
+
+// Animated counter hook
+function useCountUp(end: number, duration: number = 2000, startOnView: boolean = true) {
+  const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!startOnView) {
+      setHasStarted(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasStarted, startOnView]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+    requestAnimationFrame(step);
+  }, [hasStarted, end, duration]);
+
+  return { count, ref };
+}
+
 export default function Hero() {
+  const router = useRouter();
   const [selectedCity, setSelectedCity] = useState("");
+  const [moveInDate, setMoveInDate] = useState("");
+  const [budget, setBudget] = useState(400);
+  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (selectedCity) params.set("ciudad", selectedCity);
+    if (moveInDate) params.set("fecha", moveInDate);
+    if (budget) params.set("presupuesto", budget.toString());
+    router.push(`/explorar?${params.toString()}`);
+  };
+
+  const formatNumber = (num: number) => {
+    return num.toLocaleString("es-MX");
+  };
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
@@ -53,29 +130,47 @@ export default function Hero() {
             trabajadores que buscan alojamiento accesible y seguro.
           </p>
 
-          {/* Search bar */}
-          <div className="glass rounded-2xl p-2 shadow-primary-lg mb-8 animate-fade-in-up-delay-3">
+          {/* Search bar - Functional */}
+          <form onSubmit={handleSearch} className="glass rounded-2xl p-2 shadow-primary-lg mb-6 animate-fade-in-up-delay-3">
             <div className="flex flex-col md:flex-row gap-2">
-              {/* City selector */}
-              <div className="flex-1 flex items-center gap-3 px-4 py-3 rounded-xl bg-white/50 hover:bg-white/70 transition-colors">
-                <MapPin size={20} className="text-primary shrink-0" />
-                <div className="flex-1">
-                  <label className="block text-xs font-medium text-foreground/60 mb-0.5">
-                    Ciudad
-                  </label>
-                  <select
-                    value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
-                    className="w-full bg-transparent text-foreground font-medium text-sm focus:outline-none cursor-pointer"
-                  >
-                    <option value="">Selecciona una ciudad</option>
-                    {cities.map((city) => (
-                      <option key={city} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
+              {/* City selector with custom dropdown */}
+              <div className="flex-1 relative">
+                <div
+                  onClick={() => setCityDropdownOpen(!cityDropdownOpen)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/50 hover:bg-white/70 transition-colors cursor-pointer"
+                >
+                  <MapPin size={20} className="text-primary shrink-0" />
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-foreground/60 mb-0.5">
+                      Ciudad
+                    </label>
+                    <p className="text-foreground font-medium text-sm">
+                      {selectedCity || "Selecciona una ciudad"}
+                    </p>
+                  </div>
                 </div>
+
+                {cityDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-xl shadow-lg border border-border z-20 animate-scale-in overflow-hidden">
+                    {cities.map((city) => (
+                      <button
+                        key={city.name}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCity(city.name);
+                          setCityDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary transition-colors text-left"
+                      >
+                        <span className="text-lg">{city.flag === "MX" ? "🇲🇽" : city.flag === "CO" ? "🇨🇴" : city.flag === "PE" ? "🇵🇪" : "🇸🇻"}</span>
+                        <div>
+                          <p className="font-medium text-sm">{city.name}</p>
+                          <p className="text-xs text-muted">{city.country}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Date picker */}
@@ -87,38 +182,62 @@ export default function Hero() {
                   </label>
                   <input
                     type="date"
+                    value={moveInDate}
+                    onChange={(e) => setMoveInDate(e.target.value)}
+                    min={new Date().toISOString().split("T")[0]}
                     className="w-full bg-transparent text-foreground font-medium text-sm focus:outline-none cursor-pointer"
                   />
                 </div>
               </div>
 
-              {/* Budget */}
+              {/* Budget slider */}
               <div className="flex-1 flex items-center gap-3 px-4 py-3 rounded-xl bg-white/50 hover:bg-white/70 transition-colors">
                 <Wallet size={20} className="text-primary shrink-0" />
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-foreground/60 mb-0.5">
-                    Presupuesto máximo
+                    Presupuesto: <span className="text-primary font-semibold">${budget} USD/mes</span>
                   </label>
                   <input
-                    type="text"
-                    placeholder="Ej: $500 USD/mes"
-                    className="w-full bg-transparent text-foreground font-medium text-sm placeholder:text-foreground/40 focus:outline-none"
+                    type="range"
+                    min={100}
+                    max={800}
+                    step={50}
+                    value={budget}
+                    onChange={(e) => setBudget(Number(e.target.value))}
+                    className="custom-slider w-full mt-1"
                   />
                 </div>
               </div>
 
               {/* Search button */}
-              <button className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-4 rounded-xl transition-colors shadow-primary-md">
+              <button
+                type="submit"
+                className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-primary-md hover:shadow-primary-lg hover:-translate-y-0.5"
+              >
                 <Search size={20} />
                 <span className="hidden sm:inline">Buscar</span>
               </button>
             </div>
+          </form>
+
+          {/* Popular searches */}
+          <div className="flex flex-wrap items-center gap-2 mb-8 animate-fade-in-up-delay-3">
+            <span className="text-white/60 text-sm">Popular:</span>
+            {popularSearches.map((search) => (
+              <button
+                key={search}
+                onClick={() => router.push(`/explorar?q=${encodeURIComponent(search)}`)}
+                className="text-sm px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white/90 transition-colors"
+              >
+                {search}
+              </button>
+            ))}
           </div>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in-up-delay-3">
+          <div className="flex flex-col sm:flex-row gap-4 mb-10 animate-fade-in-up-delay-3">
             <a
-              href="/registro"
+              href="/publicar"
               className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold text-base px-7 py-4 rounded-full transition-all shadow-primary-md hover:shadow-primary-lg hover:-translate-y-0.5"
             >
               <span>Publicar mi cuarto</span>
@@ -132,25 +251,50 @@ export default function Hero() {
             </a>
           </div>
 
-          {/* Glass stat cards */}
-          <div className="flex flex-wrap gap-4">
-            {stats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className="glass rounded-xl px-5 py-4 flex items-center gap-3 shadow-primary-sm hover:shadow-primary-md transition-shadow"
-                style={{ animationDelay: `${0.4 + index * 0.1}s` }}
-              >
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <stat.icon size={20} className="text-primary" />
+          {/* Glass stat cards with animated counters */}
+          <div className="flex flex-wrap gap-4 mb-8">
+            {stats.map((stat, index) => {
+              const { count, ref } = useCountUp(stat.value, 2000);
+              return (
+                <div
+                  key={stat.label}
+                  ref={ref}
+                  className="glass rounded-xl px-5 py-4 flex items-center gap-3 shadow-primary-sm hover:shadow-primary-md transition-shadow animate-fade-in-up"
+                  style={{ animationDelay: `${0.4 + index * 0.1}s` }}
+                >
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <stat.icon size={20} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-foreground font-bold text-lg leading-tight counter-animate">
+                      {stat.prefix}{formatNumber(count)}{stat.suffix}
+                    </p>
+                    <p className="text-foreground/60 text-sm">{stat.label}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-foreground font-bold text-lg leading-tight">
-                    {stat.value}
-                  </p>
-                  <p className="text-foreground/60 text-sm">{stat.label}</p>
+              );
+            })}
+          </div>
+
+          {/* Social proof - Recent users */}
+          <div className="glass rounded-xl px-4 py-3 inline-flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: "0.7s" }}>
+            <div className="flex -space-x-2">
+              {recentUsers.map((user, i) => (
+                <div
+                  key={user.name}
+                  className="w-8 h-8 rounded-full bg-muted-bg border-2 border-white flex items-center justify-center text-xs font-bold text-primary"
+                  title={`${user.name} se mudó ${user.time}`}
+                >
+                  {user.name[0]}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="text-sm">
+              <p className="text-foreground">
+                <span className="font-semibold">Ana</span> se mudó a Guadalajara <span className="text-muted">hace 2 días</span>
+              </p>
+            </div>
+            <TrendingUp size={16} className="text-green-600" />
           </div>
         </div>
       </div>
@@ -175,6 +319,14 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Click outside to close city dropdown */}
+      {cityDropdownOpen && (
+        <div
+          className="fixed inset-0 z-10"
+          onClick={() => setCityDropdownOpen(false)}
+        />
+      )}
     </section>
   );
 }

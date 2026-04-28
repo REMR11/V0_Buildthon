@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { MapPin, TrendingUp } from "lucide-react";
 
 const cities = [
@@ -64,9 +65,9 @@ export default function FeaturedCities() {
         {/* City grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-12">
           {cities.map((city) => (
-            <a
+            <Link
               key={city.name}
-              href="#"
+              href={`/explorar?ciudad=${city.name.toLowerCase()}`}
               className="group relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm hover:shadow-primary-lg transition-all duration-300"
             >
               {/* Background image */}
@@ -120,21 +121,21 @@ export default function FeaturedCities() {
                   </div>
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
 
         {/* CTA to see more */}
         <div className="text-center">
           <p className="text-muted text-sm mb-4">
-            ¿Tu ciudad no aparece? Regístrate y te avisamos cuando lleguemos.
+            Tu ciudad no aparece? Registrate y te avisamos cuando lleguemos.
           </p>
-          <a
-            href="#"
+          <Link
+            href="/registro?notify=true"
             className="inline-flex items-center gap-2 text-primary hover:text-white hover:bg-primary font-semibold text-sm border-2 border-primary px-6 py-3 rounded-full transition-all hover:shadow-primary-md"
           >
-            Notifícame cuando lleguen a mi ciudad
-          </a>
+            Notificame cuando lleguen a mi ciudad
+          </Link>
         </div>
       </div>
     </section>

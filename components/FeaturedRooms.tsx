@@ -1,11 +1,16 @@
+"use client";
+
 import Image from "next/image";
-import { BadgeCheck, Wifi, Bath, MapPin, Star } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { BadgeCheck, Wifi, Bath, MapPin, Star, Heart, ChevronLeft, ChevronRight, Sparkles, Clock } from "lucide-react";
 
 const rooms = [
   {
     id: 1,
-    image: "/images/rooms/room-1.jpg",
+    images: ["/images/rooms/room-1.jpg", "/images/rooms/room-2.jpg", "/images/rooms/room-3.jpg"],
     title: "Habitación acogedora cerca del centro",
+    type: "Habitación privada en casa",
     city: "Guadalajara",
     country: "México",
     price: 180,
@@ -13,11 +18,15 @@ const rooms = [
     reviews: 23,
     verified: true,
     amenities: ["wifi", "bath"],
+    availability: "Disponible ahora",
+    isNew: true,
+    daysAgo: 3,
   },
   {
     id: 2,
-    image: "/images/rooms/room-2.jpg",
+    images: ["/images/rooms/room-2.jpg", "/images/rooms/room-4.jpg"],
     title: "Cuarto luminoso con escritorio",
+    type: "Habitación privada en departamento",
     city: "Bogotá",
     country: "Colombia",
     price: 220,
@@ -25,11 +34,15 @@ const rooms = [
     reviews: 18,
     verified: true,
     amenities: ["wifi"],
+    availability: "Desde 1 Jun",
+    isNew: false,
+    daysAgo: 15,
   },
   {
     id: 3,
-    image: "/images/rooms/room-3.jpg",
+    images: ["/images/rooms/room-3.jpg", "/images/rooms/room-5.jpg", "/images/rooms/room-1.jpg"],
     title: "Suite con baño privado",
+    type: "Estudio independiente",
     city: "Lima",
     country: "Perú",
     price: 320,
@@ -37,11 +50,15 @@ const rooms = [
     reviews: 31,
     verified: true,
     amenities: ["wifi", "bath"],
+    availability: "Disponible ahora",
+    isNew: true,
+    daysAgo: 5,
   },
   {
     id: 4,
-    image: "/images/rooms/room-4.jpg",
+    images: ["/images/rooms/room-4.jpg", "/images/rooms/room-6.jpg"],
     title: "Estudio compacto bien equipado",
+    type: "Estudio independiente",
     city: "Medellín",
     country: "Colombia",
     price: 195,
@@ -49,11 +66,15 @@ const rooms = [
     reviews: 12,
     verified: false,
     amenities: ["wifi"],
+    availability: "Disponible ahora",
+    isNew: false,
+    daysAgo: 22,
   },
   {
     id: 5,
-    image: "/images/rooms/room-5.jpg",
+    images: ["/images/rooms/room-5.jpg", "/images/rooms/room-1.jpg", "/images/rooms/room-3.jpg"],
     title: "Habitación premium con balcón",
+    type: "Habitación privada en casa",
     city: "Guadalajara",
     country: "México",
     price: 380,
@@ -61,11 +82,15 @@ const rooms = [
     reviews: 27,
     verified: true,
     amenities: ["wifi", "bath"],
+    availability: "Desde 15 Jun",
+    isNew: true,
+    daysAgo: 2,
   },
   {
     id: 6,
-    image: "/images/rooms/room-6.jpg",
+    images: ["/images/rooms/room-6.jpg", "/images/rooms/room-2.jpg"],
     title: "Loft estilo industrial",
+    type: "Estudio independiente",
     city: "Bogotá",
     country: "Colombia",
     price: 290,
@@ -73,6 +98,9 @@ const rooms = [
     reviews: 15,
     verified: true,
     amenities: ["wifi"],
+    availability: "Disponible ahora",
+    isNew: false,
+    daysAgo: 10,
   },
 ];
 
@@ -81,13 +109,180 @@ const amenityIcons: Record<string, typeof Wifi> = {
   bath: Bath,
 };
 
+function RoomCard({ room }: { room: typeof rooms[0] }) {
+  const [currentImage, setCurrentImage] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImage((prev) => (prev + 1) % room.images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImage((prev) => (prev - 1 + room.images.length) % room.images.length);
+  };
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsFavorite(!isFavorite);
+  };
+
+  return (
+    <Link
+      href={`/habitacion/${room.id}`}
+      className="group bg-card rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-primary-md transition-all duration-300 hover:-translate-y-1"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Image carousel */}
+      <div className="relative h-52 overflow-hidden">
+        <Image
+          src={room.images[currentImage]}
+          alt={room.title}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        {/* Gradient overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+        {/* Carousel controls - visible on hover */}
+        {room.images.length > 1 && isHovered && (
+          <>
+            <button
+              onClick={prevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100"
+              aria-label="Imagen anterior"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={nextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100"
+              aria-label="Siguiente imagen"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </>
+        )}
+
+        {/* Carousel dots */}
+        {room.images.length > 1 && (
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {room.images.map((_, index) => (
+              <span
+                key={index}
+                className={`carousel-dot ${index === currentImage ? "active" : ""}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Favorite button */}
+        <button
+          onClick={toggleFavorite}
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+            isFavorite
+              ? "bg-primary text-white"
+              : "bg-white/80 hover:bg-white text-foreground/70 hover:text-primary"
+          } ${isFavorite ? "animate-heart-beat" : ""}`}
+          aria-label={isFavorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+        >
+          <Heart size={18} className={isFavorite ? "fill-current" : ""} />
+        </button>
+
+        {/* Top left badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2">
+          {/* Verified badge */}
+          {room.verified && (
+            <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-sm text-primary font-semibold text-xs px-3 py-1.5 rounded-full shadow-sm">
+              <BadgeCheck size={14} />
+              <span>Verificado</span>
+            </div>
+          )}
+
+          {/* New badge */}
+          {room.isNew && room.daysAgo <= 7 && (
+            <div className="flex items-center gap-1.5 bg-green-500 text-white font-semibold text-xs px-3 py-1.5 rounded-full shadow-sm">
+              <Sparkles size={12} />
+              <span>Nuevo</span>
+            </div>
+          )}
+        </div>
+
+        {/* Price tag */}
+        <div className="absolute bottom-3 right-3 glass rounded-lg px-3 py-1.5">
+          <span className="text-foreground font-bold">${room.price}</span>
+          <span className="text-foreground/60 text-sm">/mes</span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-5">
+        {/* Room type */}
+        <p className="text-xs font-medium text-muted mb-1">{room.type}</p>
+
+        <h3 className="font-semibold text-foreground text-lg mb-2 group-hover:text-primary transition-colors line-clamp-1">
+          {room.title}
+        </h3>
+
+        {/* Location */}
+        <div className="flex items-center gap-1.5 text-muted text-sm mb-3">
+          <MapPin size={14} />
+          <span>
+            {room.city}, {room.country}
+          </span>
+        </div>
+
+        {/* Availability badge */}
+        <div className="flex items-center gap-1.5 mb-3">
+          <Clock size={14} className={room.availability === "Disponible ahora" ? "text-green-600" : "text-muted"} />
+          <span className={`text-sm font-medium ${room.availability === "Disponible ahora" ? "text-green-600" : "text-muted"}`}>
+            {room.availability}
+          </span>
+        </div>
+
+        {/* Rating and amenities */}
+        <div className="flex items-center justify-between">
+          {/* Rating */}
+          <div className="flex items-center gap-1.5">
+            <Star size={14} className="text-primary fill-primary" />
+            <span className="font-semibold text-foreground text-sm">{room.rating}</span>
+            <span className="text-muted text-sm">({room.reviews} reseñas)</span>
+          </div>
+
+          {/* Amenities */}
+          <div className="flex items-center gap-2">
+            {room.amenities.map((amenity) => {
+              const Icon = amenityIcons[amenity];
+              return (
+                <div
+                  key={amenity}
+                  className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center"
+                  title={amenity === "wifi" ? "WiFi incluido" : "Baño privado"}
+                >
+                  <Icon size={14} className="text-muted" />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default function FeaturedRooms() {
   return (
-    <section className="py-24 bg-secondary">
+    <section id="habitaciones" className="py-24 bg-secondary">
       <div className="max-w-6xl mx-auto px-5">
         <div className="text-center mb-12">
           <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
-            Descubre tu próximo hogar
+            Descubre tu proximo hogar
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
             Habitaciones destacadas
@@ -98,102 +293,30 @@ export default function FeaturedRooms() {
           </p>
         </div>
 
+        {/* Urgency banner */}
+        <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-8 flex items-center justify-center gap-3">
+          <Sparkles size={18} className="text-primary" />
+          <p className="text-sm font-medium text-foreground">
+            <span className="text-primary font-bold">127 habitaciones nuevas</span> publicadas esta semana
+          </p>
+        </div>
+
         {/* Rooms grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {rooms.map((room) => (
-            <a
-              key={room.id}
-              href="#"
-              className="group bg-card rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-primary-md transition-all duration-300 hover:-translate-y-1"
-            >
-              {/* Image container */}
-              <div className="relative h-52 overflow-hidden">
-                <Image
-                  src={room.image}
-                  alt={room.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                {/* Gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                {/* Verified badge */}
-                {room.verified && (
-                  <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm text-primary font-semibold text-xs px-3 py-1.5 rounded-full shadow-sm">
-                    <BadgeCheck size={14} />
-                    <span>Verificado</span>
-                  </div>
-                )}
-
-                {/* Price tag */}
-                <div className="absolute bottom-3 right-3 glass rounded-lg px-3 py-1.5">
-                  <span className="text-foreground font-bold">
-                    ${room.price}
-                  </span>
-                  <span className="text-foreground/60 text-sm">/mes</span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-5">
-                <h3 className="font-semibold text-foreground text-lg mb-2 group-hover:text-primary transition-colors line-clamp-1">
-                  {room.title}
-                </h3>
-
-                {/* Location */}
-                <div className="flex items-center gap-1.5 text-muted text-sm mb-3">
-                  <MapPin size={14} />
-                  <span>
-                    {room.city}, {room.country}
-                  </span>
-                </div>
-
-                {/* Rating and amenities */}
-                <div className="flex items-center justify-between">
-                  {/* Rating */}
-                  <div className="flex items-center gap-1.5">
-                    <Star
-                      size={14}
-                      className="text-primary fill-primary"
-                    />
-                    <span className="font-semibold text-foreground text-sm">
-                      {room.rating}
-                    </span>
-                    <span className="text-muted text-sm">
-                      ({room.reviews})
-                    </span>
-                  </div>
-
-                  {/* Amenities */}
-                  <div className="flex items-center gap-2">
-                    {room.amenities.map((amenity) => {
-                      const Icon = amenityIcons[amenity];
-                      return (
-                        <div
-                          key={amenity}
-                          className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center"
-                          title={amenity === "wifi" ? "WiFi incluido" : "Baño privado"}
-                        >
-                          <Icon size={14} className="text-muted" />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </a>
+            <RoomCard key={room.id} room={room} />
           ))}
         </div>
 
         {/* CTA */}
         <div className="text-center">
-          <a
-            href="#"
+          <Link
+            href="/explorar"
             className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-8 py-4 rounded-full transition-all shadow-primary-md hover:shadow-primary-lg hover:-translate-y-0.5"
           >
             <span>Ver todas las habitaciones</span>
             <span aria-hidden="true">→</span>
-          </a>
+          </Link>
         </div>
       </div>
     </section>
