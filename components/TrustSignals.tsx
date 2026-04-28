@@ -1,7 +1,17 @@
 "use client";
 
-import { BadgeCheck, FilePenLine, ShieldCheck, Star, Lock, ChevronLeft, ChevronRight, Users, Home, Calendar } from "lucide-react";
-import Image from "next/image";
+import {
+  BadgeCheck,
+  FilePenLine,
+  ShieldCheck,
+  Star,
+  Lock,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  Home,
+  Calendar,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 const signals = [
@@ -9,7 +19,7 @@ const signals = [
     icon: BadgeCheck,
     title: "Identidad verificada",
     description:
-      "Todos los usuarios pasan por un proceso de verificacion de identidad antes de publicar o rentar.",
+      "Todos los usuarios pasan por un proceso de verificación de identidad antes de publicar o rentar.",
   },
   {
     icon: FilePenLine,
@@ -21,68 +31,62 @@ const signals = [
     icon: ShieldCheck,
     title: "Pagos seguros",
     description:
-      "Procesa rentas mensuales de forma automatica y segura. Sin efectivo, sin malentendidos.",
+      "Procesa rentas mensuales de forma automática y segura. Sin efectivo, sin malentendidos.",
   },
 ];
 
 const testimonials = [
   {
-    avatar: "/images/avatar-1.jpg",
-    name: "Rosa Mendez",
-    city: "Guadalajara, Mexico",
+    name: "Rosa Méndez",
+    city: "Guadalajara, México",
     quote:
-      "Tenia miedo de rentar a un extrano, pero con Nidoo verifique la identidad del inquilino y firmamos el contrato en linea. Fue facilisimo.",
+      "Tenía miedo de rentar a un extraño, pero con Nidoo verifiqué la identidad del inquilino y firmamos el contrato en línea. Fue facilísimo.",
     stars: 5,
+    role: "Propietaria",
   },
   {
-    avatar: "/images/avatar-2.jpg",
-    name: "Andres Villanueva",
-    city: "Bogota, Colombia",
+    name: "Andrés Villanueva",
+    city: "Bogotá, Colombia",
     quote:
-      "Llegue a Bogota a estudiar sin conocer a nadie. En tres dias encontre una habitacion limpia y segura. Nidoo me salvo el semestre.",
+      "Llegué a Bogotá a estudiar sin conocer a nadie. En tres días encontré una habitación limpia y segura. Nidoo me salvó el semestre.",
     stars: 5,
+    role: "Inquilino",
   },
   {
-    avatar: "/images/avatar-3.jpg",
-    name: "Camila Rios",
-    city: "Lima, Peru",
+    name: "Camila Ríos",
+    city: "Lima, Perú",
     quote:
-      "Buscaba en grupos de WhatsApp y era un caos. Nidoo tiene fotos reales, precios claros y atencion inmediata. No vuelvo a buscar diferente.",
+      "Buscaba en grupos de WhatsApp y era un caos. Nidoo tiene fotos reales, precios claros y atención inmediata. No vuelvo a buscar diferente.",
     stars: 5,
+    role: "Inquilina",
   },
   {
-    avatar: "/images/avatar-4.jpg",
     name: "Miguel Santos",
-    city: "Medellin, Colombia",
+    city: "Medellín, Colombia",
     quote:
-      "Como propietario, Nidoo me quito el estres de encontrar inquilinos confiables. El proceso de verificacion y el contrato digital son increibles.",
+      "Como propietario, Nidoo me quitó el estrés de encontrar inquilinos confiables. El proceso de verificación y el contrato digital son increíbles.",
     stars: 5,
+    role: "Propietario",
   },
   {
-    avatar: "/images/avatar-5.jpg",
     name: "Laura Herrera",
     city: "San Salvador, El Salvador",
     quote:
-      "La plataforma es muy intuitiva. Encontre mi habitacion ideal en menos de una semana y todo el proceso fue 100% digital.",
+      "La plataforma es muy intuitiva. Encontré mi habitación ideal en menos de una semana y todo el proceso fue 100% digital.",
     stars: 5,
+    role: "Inquilina",
   },
 ];
 
 const pressLogos = [
   { name: "Forbes", text: "Forbes" },
   { name: "TechCrunch", text: "TechCrunch" },
-  { name: "El Pais", text: "El Pais" },
-  { name: "Expansion", text: "Expansion" },
+  { name: "El País", text: "El País" },
+  { name: "Expansión", text: "Expansión" },
   { name: "Bloomberg", text: "Bloomberg" },
 ];
 
-const stats = [
-  { icon: Users, value: 12000, label: "Usuarios verificados", prefix: "+" },
-  { icon: Home, value: 5000, label: "Habitaciones publicadas", prefix: "+" },
-  { icon: Calendar, value: 98, label: "Contratos firmados al dia", suffix: "%" },
-];
-
-// Counter hook for animated numbers
+// Animated counter — hook called at sub-component top-level to obey Rules of Hooks
 function useCountUp(end: number, duration: number = 2000) {
   const [count, setCount] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
@@ -91,31 +95,22 @@ function useCountUp(end: number, duration: number = 2000) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasStarted) {
-          setHasStarted(true);
-        }
+        if (entry.isIntersecting && !hasStarted) setHasStarted(true);
       },
       { threshold: 0.5 }
     );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, [hasStarted]);
 
   useEffect(() => {
     if (!hasStarted) return;
-
     let startTime: number | null = null;
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
       setCount(Math.floor(progress * end));
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
+      if (progress < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
   }, [hasStarted, end, duration]);
@@ -123,26 +118,66 @@ function useCountUp(end: number, duration: number = 2000) {
   return { count, ref };
 }
 
+// Isolated sub-component — each calls useCountUp at its own top-level
+function AnimatedStat({
+  icon: Icon,
+  value,
+  label,
+  prefix,
+  suffix,
+}: {
+  icon: React.ElementType;
+  value: number;
+  label: string;
+  prefix?: string;
+  suffix?: string;
+}) {
+  const { count, ref } = useCountUp(value, 2000);
+
+  return (
+    <div
+      ref={ref}
+      className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8 text-center border border-primary/10"
+    >
+      <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-4">
+        <Icon size={24} className="text-primary" />
+      </div>
+      <p className="text-4xl font-bold text-foreground mb-2 counter-animate">
+        {prefix ?? ""}
+        {count.toLocaleString("es-MX")}
+        {suffix ?? ""}
+      </p>
+      <p className="text-muted text-sm">{label}</p>
+    </div>
+  );
+}
+
+const statDefs = [
+  { icon: Users, value: 12000, label: "Usuarios verificados", prefix: "+" },
+  { icon: Home, value: 5000, label: "Habitaciones publicadas", prefix: "+" },
+  {
+    icon: Calendar,
+    value: 98,
+    label: "Contratos firmados al día",
+    suffix: "%",
+  },
+];
+
 export default function TrustSignals() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
-  const nextTestimonial = () => {
+  const nextTestimonial = () =>
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
+  const prevTestimonial = () =>
+    setCurrentTestimonial(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length
+    );
 
-  const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  // Auto-advance testimonials
+  // Auto-advance every 5 s
   useEffect(() => {
     const interval = setInterval(nextTestimonial, 5000);
     return () => clearInterval(interval);
   }, []);
-
-  const formatNumber = (num: number) => {
-    return num.toLocaleString("es-MX");
-  };
 
   return (
     <section id="confianza" className="py-24 bg-background">
@@ -153,53 +188,41 @@ export default function TrustSignals() {
             Tu tranquilidad, nuestra prioridad
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            Disenado para inspirar confianza
+            Diseñado para inspirar confianza
           </h2>
           <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
-            Cada funcion de Nidoo fue pensada para proteger a propietarios e
+            Cada función de Nidoo fue pensada para proteger a propietarios e
             inquilinos por igual.
           </p>
         </div>
 
-        {/* Press logos */}
+        {/* Press logos strip */}
         <div className="mb-16">
-          <p className="text-center text-sm text-muted mb-6">Nos han mencionado en:</p>
+          <p className="text-center text-sm text-muted mb-6">
+            Nos han mencionado en:
+          </p>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
             {pressLogos.map((logo) => (
-              <div
+              <span
                 key={logo.name}
-                className="text-xl md:text-2xl font-bold text-muted/40 hover:text-muted/60 transition-colors cursor-default"
+                className="text-xl md:text-2xl font-bold text-muted/40 hover:text-muted/60 transition-colors select-none"
                 style={{ fontFamily: "Georgia, serif" }}
+                aria-label={logo.name}
               >
                 {logo.text}
-              </div>
+              </span>
             ))}
           </div>
         </div>
 
-        {/* Animated stats counters */}
+        {/* Animated stats — each in its own sub-component */}
         <div className="grid md:grid-cols-3 gap-6 mb-16">
-          {stats.map((stat, i) => {
-            const { count, ref } = useCountUp(stat.value, 2000);
-            return (
-              <div
-                key={i}
-                ref={ref}
-                className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8 text-center border border-primary/10"
-              >
-                <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-4">
-                  <stat.icon size={24} className="text-primary" />
-                </div>
-                <p className="text-4xl font-bold text-foreground mb-2 counter-animate">
-                  {stat.prefix || ""}{formatNumber(count)}{stat.suffix || ""}
-                </p>
-                <p className="text-muted text-sm">{stat.label}</p>
-              </div>
-            );
-          })}
+          {statDefs.map((stat) => (
+            <AnimatedStat key={stat.label} {...stat} />
+          ))}
         </div>
 
-        {/* Trust badges */}
+        {/* Trust pillars */}
         <div className="grid md:grid-cols-3 gap-6 mb-16">
           {signals.map((signal, i) => {
             const Icon = signal.icon;
@@ -230,60 +253,84 @@ export default function TrustSignals() {
           </div>
           <div className="flex items-center gap-2 bg-secondary border border-border rounded-full px-4 py-2">
             <ShieldCheck size={16} className="text-primary" />
-            <span className="text-sm font-medium text-foreground">Datos protegidos</span>
+            <span className="text-sm font-medium text-foreground">
+              Datos protegidos
+            </span>
           </div>
           <div className="flex items-center gap-2 bg-secondary border border-border rounded-full px-4 py-2">
             <BadgeCheck size={16} className="text-primary" />
-            <span className="text-sm font-medium text-foreground">Verificacion KYC</span>
+            <span className="text-sm font-medium text-foreground">
+              Verificación KYC
+            </span>
           </div>
         </div>
 
         {/* Testimonials carousel */}
-        <div className="relative">
+        <div>
           <div className="text-center mb-8">
             <h3 className="font-serif text-2xl font-bold text-foreground mb-2">
               Lo que dicen nuestros usuarios
             </h3>
-            <p className="text-muted">Miles de historias de exito en toda Latinoamerica</p>
+            <p className="text-muted">
+              Miles de historias de éxito en toda Latinoamérica
+            </p>
           </div>
 
-          <div className="relative overflow-hidden">
-            <div
-              className="flex transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}
-            >
-              {testimonials.map((t, i) => (
-                <div
-                  key={i}
-                  className="w-full flex-shrink-0 px-4 md:px-16"
-                >
-                  <div className="bg-card rounded-2xl p-8 md:p-10 border border-border shadow-sm max-w-2xl mx-auto">
-                    {/* Stars */}
-                    <div className="flex gap-1 justify-center mb-4" aria-label={`${t.stars} estrellas`}>
-                      {Array.from({ length: t.stars }).map((_, s) => (
-                        <Star key={s} size={18} className="fill-primary text-primary" />
-                      ))}
-                    </div>
-                    {/* Quote */}
-                    <p className="text-foreground text-lg md:text-xl leading-relaxed text-center mb-6">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
-                    {/* Author */}
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-muted-bg flex items-center justify-center text-lg font-bold text-primary">
-                        {t.name[0]}
+          <div className="relative">
+            {/* Sliding track */}
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{
+                  transform: `translateX(-${currentTestimonial * 100}%)`,
+                }}
+              >
+                {testimonials.map((t, i) => (
+                  <div key={i} className="w-full flex-shrink-0 px-4 md:px-16">
+                    <div className="bg-card rounded-2xl p-8 md:p-10 border border-border shadow-sm max-w-2xl mx-auto">
+                      {/* Stars */}
+                      <div
+                        className="flex gap-1 justify-center mb-4"
+                        aria-label={`${t.stars} estrellas`}
+                      >
+                        {Array.from({ length: t.stars }).map((_, s) => (
+                          <Star
+                            key={s}
+                            size={18}
+                            className="fill-primary text-primary"
+                          />
+                        ))}
                       </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-foreground">{t.name}</p>
-                        <p className="text-muted text-sm">{t.city}</p>
+
+                      {/* Quote */}
+                      <blockquote className="text-foreground text-lg md:text-xl leading-relaxed text-center mb-6">
+                        &ldquo;{t.quote}&rdquo;
+                      </blockquote>
+
+                      {/* Author */}
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-muted-bg flex items-center justify-center text-lg font-bold text-primary">
+                          {t.name[0]}
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold text-foreground">
+                            {t.name}
+                          </p>
+                          <p className="text-muted text-sm">
+                            {t.city} &middot;{" "}
+                            <span className="text-primary text-xs font-medium">
+                              {t.role}
+                            </span>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* Carousel controls */}
+            {/* Prev / Next controls */}
             <button
               onClick={prevTestimonial}
               className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-secondary transition-colors"
@@ -300,14 +347,16 @@ export default function TrustSignals() {
             </button>
           </div>
 
-          {/* Carousel dots */}
+          {/* Dot indicators */}
           <div className="flex justify-center gap-2 mt-6">
             {testimonials.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentTestimonial(i)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  i === currentTestimonial ? "bg-primary w-6" : "bg-border hover:bg-muted"
+                className={`h-2 rounded-full transition-all ${
+                  i === currentTestimonial
+                    ? "bg-primary w-6"
+                    : "bg-border hover:bg-muted w-2"
                 }`}
                 aria-label={`Ir al testimonio ${i + 1}`}
               />

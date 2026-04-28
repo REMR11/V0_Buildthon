@@ -1,61 +1,121 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
+import { ChevronDown, MessageCircle, HelpCircle } from "lucide-react";
 
 const faqs = [
   {
-    question: "Como funciona el proceso de verificacion de identidad?",
+    category: "Proceso",
+    question: "¿Cómo funciona el proceso para encontrar habitación?",
     answer:
-      "Todos los usuarios deben verificar su identidad subiendo una foto de su identificacion oficial (INE, cedula, pasaporte) y una selfie. Nuestro sistema automatizado valida la informacion en menos de 24 horas. Esto garantiza que tanto propietarios como inquilinos sean personas reales y confiables.",
+      "Es muy sencillo: busca por ciudad, fecha y presupuesto, explora habitaciones con fotos reales y precios transparentes, contacta al propietario por nuestro chat, y firma el contrato digital. Todo sin salir de la plataforma. El proceso completo puede tomar desde un día.",
   },
   {
-    question: "Es gratis publicar mi habitacion?",
+    category: "Proceso",
+    question: "¿Puedo visitar la habitación antes de rentarla?",
     answer:
-      "Si, publicar tu habitacion en Nidoo es completamente gratis. No cobramos comisiones por publicar ni por recibir solicitudes. Solo aplicamos una pequena comision cuando se firma un contrato exitoso, para cubrir los costos del contrato digital y la proteccion de pagos.",
+      "Absolutamente. Recomendamos coordinar una visita a través del chat de la plataforma antes de firmar cualquier contrato. Algunos propietarios también ofrecen video tours para inquilinos que están en otra ciudad. Nunca pagues ni firmes sin estar seguro de tu decisión.",
   },
   {
-    question: "Como funcionan los contratos digitales?",
+    category: "Seguridad",
+    question: "¿Qué significa que una habitación esté 'Verificada'?",
     answer:
-      "Nuestros contratos digitales son documentos legalmente validos que cumplen con la normativa de cada pais. Ambas partes firman electronicamente, y el contrato queda almacenado de forma segura en nuestra plataforma. Incluye todas las clausulas estandar de arrendamiento y puede personalizarse segun las necesidades.",
+      "El badge 'Verificado' indica que el propietario pasó por nuestro proceso KYC: verificación de identidad con documento oficial, validación de la propiedad del inmueble, y revisión de las fotos por nuestro equipo. Esto garantiza que la habitación existe y que el propietario es quien dice ser.",
   },
   {
-    question: "Que pasa si tengo problemas con mi inquilino/propietario?",
+    category: "Seguridad",
+    question: "¿El contrato digital tiene validez legal?",
     answer:
-      "Nidoo cuenta con un equipo de soporte dedicado a resolver conflictos. Si surge algun problema, puedes contactarnos a traves del chat de la plataforma o por email. Mediamos entre las partes y, si es necesario, aplicamos las politicas de proteccion que cubren tanto a propietarios como inquilinos.",
+      "Sí. Los contratos de Nidoo son redactados por nuestro equipo legal y cumplen con la legislación de arrendamiento de México, Colombia, Perú y El Salvador. Incluyen firma electrónica con validez jurídica, timestamp certificado, y son almacenados de forma segura. Ambas partes reciben una copia al correo electrónico.",
   },
   {
-    question: "Como se procesan los pagos mensuales?",
+    category: "Seguridad",
+    question: "¿Qué pasa si tengo problemas con mi inquilino o propietario?",
     answer:
-      "Los pagos se procesan de forma automatica cada mes a traves de nuestra plataforma segura. El inquilino puede pagar con tarjeta de credito, debito o transferencia bancaria. El propietario recibe el pago en su cuenta en un plazo de 2-3 dias habiles, menos la comision de servicio.",
+      "Nidoo actúa como árbitro neutral en disputas. Documentamos el estado del inmueble con fotos al inicio y al final de la renta. Si surge algún problema, nuestro equipo de soporte media entre las partes basándose en la evidencia documentada y aplica las políticas de protección correspondientes.",
   },
   {
-    question: "Puedo visitar la habitacion antes de rentarla?",
+    category: "Pagos",
+    question: "¿Es gratis publicar mi habitación?",
     answer:
-      "Absolutamente. Recomendamos coordinar una visita a traves del chat de la plataforma antes de firmar cualquier contrato. Algunos propietarios tambien ofrecen video tours para inquilinos que estan en otra ciudad. Nunca pagues ni firmes sin estar seguro de tu decision.",
+      "Sí, publicar tu habitación en Nidoo es completamente gratuito. No cobramos comisiones por publicar ni por recibir solicitudes. Solo aplicamos una pequeña comisión cuando se firma un contrato exitoso, para cubrir los costos del contrato digital y la protección de pagos.",
   },
   {
-    question: "En que ciudades esta disponible Nidoo?",
+    category: "Pagos",
+    question: "¿Cómo se procesan los pagos mensuales?",
     answer:
-      "Actualmente operamos en Guadalajara, Ciudad de Mexico, Bogota, Medellin, Lima y San Salvador. Estamos expandiendonos rapidamente a mas ciudades de America Latina. Si tu ciudad no esta disponible aun, puedes suscribirte para recibir notificaciones cuando llegemos a tu zona.",
+      "Los pagos se procesan automáticamente cada mes a través de nuestra plataforma segura. El inquilino puede pagar con tarjeta de crédito, débito o transferencia bancaria. El propietario recibe el pago en su cuenta en 2–3 días hábiles, descontando la comisión de servicio.",
   },
   {
-    question: "Que incluye la proteccion de Nidoo?",
+    category: "General",
+    question: "¿En qué ciudades está disponible Nidoo?",
     answer:
-      "Nuestra proteccion incluye: verificacion de identidad de todos los usuarios, contratos legales digitales, pagos seguros con trazabilidad completa, soporte de mediacion en caso de conflictos, y garantia de devolucion del deposito si el propietario no cumple con lo acordado.",
+      "Actualmente operamos en 5 países: México (Guadalajara, CDMX, Monterrey), Colombia (Bogotá, Medellín), Perú (Lima), y El Salvador (San Salvador). Estamos expandiéndonos rápidamente. Si tu ciudad no está disponible aún, puedes suscribirte para recibir notificaciones cuando lleguemos.",
   },
 ];
 
+const CATEGORIES = ["Todos", ...Array.from(new Set(faqs.map((f) => f.category)))];
+
+function FAQItem({
+  question,
+  answer,
+  isOpen,
+  onToggle,
+}: {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="bg-card rounded-2xl border border-border overflow-hidden">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-secondary/60 transition-colors"
+        aria-expanded={isOpen}
+      >
+        <span className="font-semibold text-foreground leading-snug">{question}</span>
+        <ChevronDown
+          size={20}
+          className={`text-muted flex-shrink-0 transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          aria-hidden="true"
+        />
+      </button>
+
+      {/* Smooth height animation via max-height */}
+      <div
+        className={`transition-all duration-300 ease-out overflow-hidden ${
+          isOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-6 pb-6 border-t border-border">
+          <p className="text-muted leading-relaxed pt-4 text-sm">{answer}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [activeCategory, setActiveCategory] = useState("Todos");
 
-  const toggleFaq = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  const visible =
+    activeCategory === "Todos"
+      ? faqs
+      : faqs.filter((f) => f.category === activeCategory);
+
+  const toggle = (globalIndex: number) =>
+    setOpenIndex(openIndex === globalIndex ? null : globalIndex);
+
+  // Resolve local visible index back to the global faqs index
+  const globalIndex = (item: (typeof faqs)[0]) => faqs.indexOf(item);
 
   return (
     <section id="faq" className="py-24 bg-background">
-      <div className="max-w-4xl mx-auto px-5">
+      <div className="max-w-3xl mx-auto px-5">
         {/* Header */}
         <div className="text-center mb-12">
           <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
@@ -64,64 +124,70 @@ export default function FAQ() {
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
             Preguntas frecuentes
           </h2>
-          <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-muted text-lg leading-relaxed">
             Todo lo que necesitas saber sobre Nidoo antes de empezar.
           </p>
         </div>
 
-        {/* FAQ list */}
-        <div className="space-y-4 mb-12">
-          {faqs.map((faq, index) => (
-            <details
-              key={index}
-              className="faq-item group bg-card rounded-2xl border border-border overflow-hidden"
-              open={openIndex === index}
-              onToggle={(e) => {
-                if ((e.target as HTMLDetailsElement).open) {
-                  setOpenIndex(index);
-                } else if (openIndex === index) {
-                  setOpenIndex(null);
-                }
+        {/* Category filter pills */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setActiveCategory(cat);
+                setOpenIndex(null);
               }}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                activeCategory === cat
+                  ? "bg-primary text-white shadow-primary-sm"
+                  : "bg-secondary border border-border text-muted hover:text-foreground hover:border-primary/30"
+              }`}
             >
-              <summary className="flex items-center justify-between gap-4 p-6 cursor-pointer hover:bg-secondary/50 transition-colors">
-                <span className="font-semibold text-foreground text-left pr-4">
-                  {faq.question}
-                </span>
-                <ChevronDown
-                  size={20}
-                  className="faq-icon text-muted flex-shrink-0"
-                />
-              </summary>
-              <div className="faq-content px-6 pb-6">
-                <p className="text-muted leading-relaxed">{faq.answer}</p>
-              </div>
-            </details>
+              {cat}
+            </button>
           ))}
+        </div>
+
+        {/* Accordion list */}
+        <div className="flex flex-col gap-3 mb-12">
+          {visible.map((faq) => {
+            const idx = globalIndex(faq);
+            return (
+              <FAQItem
+                key={idx}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openIndex === idx}
+                onToggle={() => toggle(idx)}
+              />
+            );
+          })}
         </div>
 
         {/* Still have questions */}
         <div className="bg-secondary rounded-2xl p-8 text-center border border-border">
-          <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <MessageCircle size={24} className="text-primary" />
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <MessageCircle size={24} className="text-primary" aria-hidden="true" />
           </div>
           <h3 className="font-semibold text-xl text-foreground mb-2">
-            Tienes mas preguntas?
+            ¿Tienes más preguntas?
           </h3>
-          <p className="text-muted mb-6 max-w-md mx-auto">
-            Nuestro equipo de soporte esta disponible para ayudarte en cualquier momento.
+          <p className="text-muted mb-6 max-w-sm mx-auto text-sm leading-relaxed">
+            Nuestro equipo de soporte está disponible en español, lunes a domingo
+            de 8 am a 10 pm (hora CDMX).
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="/ayuda"
-              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-full transition-all"
+              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-full transition-all shadow-primary-sm hover:shadow-primary-md hover:-translate-y-0.5 text-sm"
             >
-              <HelpCircle size={18} />
+              <HelpCircle size={16} aria-hidden="true" />
               Centro de ayuda
             </a>
             <a
-              href="mailto:soporte@nidoo.com"
-              className="inline-flex items-center justify-center gap-2 bg-card hover:bg-secondary text-foreground border border-border font-semibold px-6 py-3 rounded-full transition-all"
+              href="/contacto"
+              className="inline-flex items-center justify-center gap-2 bg-card hover:bg-secondary border border-border text-foreground font-semibold px-6 py-3 rounded-full transition-all text-sm"
             >
               Contactar soporte
             </a>

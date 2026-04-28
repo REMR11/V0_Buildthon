@@ -85,6 +85,7 @@ export default function Navbar() {
               <a
                 key={id}
                 href={`#${id}`}
+                aria-current={activeSection === id ? "true" : undefined}
                 className={`relative hover:text-primary transition-colors ${
                   activeSection === id ? "nav-link-active text-primary" : ""
                 }`}
@@ -193,6 +194,7 @@ export default function Navbar() {
                 key={id}
                 href={`#${id}`}
                 onClick={() => setOpen(false)}
+                aria-current={activeSection === id ? "true" : undefined}
                 className={`text-foreground/70 hover:text-primary transition-colors ${
                   activeSection === id ? "text-primary font-semibold" : ""
                 }`}
