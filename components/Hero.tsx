@@ -102,9 +102,10 @@ export default function Hero() {
           {/* Search form */}
           <form
             onSubmit={handleSearch}
-            className="bg-white/95 rounded-2xl p-2 shadow-primary-lg mb-6 animate-fade-in-up-delay-3"
+            className="bg-white/95 rounded-2xl p-3 shadow-primary-lg mb-6 animate-fade-in-up-delay-3"
           >
-            <div className="flex flex-col md:flex-row gap-2">
+            {/* Row 1: three fields */}
+            <div className="flex flex-col sm:flex-row gap-1 mb-2">
 
               {/* City */}
               <div className="relative flex-1">
@@ -115,7 +116,7 @@ export default function Hero() {
                   aria-haspopup="listbox"
                   aria-expanded={cityDropdownOpen}
                 >
-                  <MapPin size={18} className="text-primary shrink-0" />
+                  <MapPin size={16} className="text-primary shrink-0" />
                   <div className="flex-1 min-w-0">
                     <span className="block text-xs font-medium text-foreground/50 mb-0.5">Ciudad</span>
                     <span className="text-foreground font-medium text-sm truncate block">
@@ -149,12 +150,12 @@ export default function Hero() {
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block w-px bg-border my-2" />
+              <div className="hidden sm:block w-px bg-border my-2 shrink-0" />
 
               {/* Date */}
               <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary transition-colors">
-                <Calendar size={18} className="text-primary shrink-0" />
-                <div className="flex-1">
+                <Calendar size={16} className="text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
                   <label htmlFor="hero-date" className="block text-xs font-medium text-foreground/50 mb-0.5">
                     Entrada
                   </label>
@@ -170,12 +171,12 @@ export default function Hero() {
               </div>
 
               {/* Divider */}
-              <div className="hidden md:block w-px bg-border my-2" />
+              <div className="hidden sm:block w-px bg-border my-2 shrink-0" />
 
               {/* Budget */}
               <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary transition-colors">
-                <Wallet size={18} className="text-primary shrink-0" />
-                <div className="flex-1">
+                <Wallet size={16} className="text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
                   <label htmlFor="hero-budget" className="block text-xs font-medium text-foreground/50 mb-0.5">
                     Hasta <span className="text-primary font-semibold">${budget} USD/mes</span>
                   </label>
@@ -191,16 +192,16 @@ export default function Hero() {
                   />
                 </div>
               </div>
-
-              {/* Submit */}
-              <button
-                type="submit"
-                className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-4 rounded-xl transition-all shadow-primary-md hover:shadow-primary-lg hover:-translate-y-0.5 whitespace-nowrap"
-              >
-                <Search size={18} />
-                <span>Buscar</span>
-              </button>
             </div>
+
+            {/* Row 2: full-width search button */}
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3.5 rounded-xl transition-all shadow-primary-md hover:shadow-primary-lg hover:-translate-y-0.5"
+            >
+              <Search size={18} />
+              <span>Buscar habitación</span>
+            </button>
           </form>
 
           {/* Compact stats strip */}
