@@ -40,8 +40,8 @@ const C = {
   tealBg: "#e8f4f1",
 };
 
-// Default country center (El Salvador) for clearing the city filter
-const EL_SALVADOR_CENTER = { lat: 13.7942, lng: -88.8965, zoom: 8 };
+// Default center: geographic center of LATAM — used when clearing the city filter
+const LATAM_CENTER = { lat: 4.0, lng: -74.0, zoom: 4 };
 
 // ─── Filter chips ──────────────────────────────────────────────────────────────
 type FilterKey =
@@ -418,13 +418,13 @@ export default function ExplorarPage() {
   const clearCityFilter = () => {
     setActiveCity(null);
     setActiveListing(null);
-    setFlyTarget(EL_SALVADOR_CENTER);
+    setFlyTarget(LATAM_CENTER);
   };
 
-  // Initial map center: use URL params if present, else default
-  const initialLat = latParam ? parseFloat(latParam) : 13.6929;
-  const initialLng = lngParam ? parseFloat(lngParam) : -89.2182;
-  const initialZoom = zoomParam ? parseInt(zoomParam) : 13;
+  // Initial map center: use URL params if present, else LATAM overview
+  const initialLat = latParam ? parseFloat(latParam) : LATAM_CENTER.lat;
+  const initialLng = lngParam ? parseFloat(lngParam) : LATAM_CENTER.lng;
+  const initialZoom = zoomParam ? parseInt(zoomParam) : LATAM_CENTER.zoom;
 
   return (
     <div className="flex flex-col" style={{ height: "100dvh", background: C.bg }}>
@@ -458,9 +458,9 @@ export default function ExplorarPage() {
                 : "Habitaciones disponibles"}
             </h1>
             <p className="text-xs" style={{ color: C.muted }}>
-              {activeCity && cityDisplayName
-                ? cityDisplayName + ", El Salvador"
-                : "San Salvador y Antiguo Cuscatlán"}
+              {activeCity && cityData
+                ? `${cityData.name}, ${cityData.country}`
+                : "Toda Latinoamérica"}
             </p>
 
             {/* Search */}
