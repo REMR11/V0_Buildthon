@@ -8,7 +8,6 @@ const NAV_SECTIONS = [
   { id: "como-funciona", label: "Cómo funciona" },
   { id: "confianza", label: "Confianza" },
   { id: "habitaciones", label: "Habitaciones" },
-  { id: "ciudades", label: "Ciudades" },
 ];
 
 export default function Navbar() {
@@ -93,6 +92,12 @@ export default function Navbar() {
                 {label}
               </a>
             ))}
+            <Link
+              href="/ciudades"
+              className="hover:text-primary transition-colors"
+            >
+              Ciudades
+            </Link>
             <Link
               href="/explorar"
               className="flex items-center gap-1.5 hover:text-primary transition-colors"
@@ -202,6 +207,13 @@ export default function Navbar() {
                 {label}
               </a>
             ))}
+            <Link
+              href="/ciudades"
+              onClick={() => setOpen(false)}
+              className="text-foreground/70 hover:text-primary transition-colors"
+            >
+              Ciudades
+            </Link>
             <Link
               href="/explorar"
               onClick={() => setOpen(false)}
