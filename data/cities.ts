@@ -4,6 +4,8 @@ export type City = {
   listings: string;
   priceFrom: number;
   image: string;
+  /** Short sentence used as the <Image> alt attribute. */
+  description: string;
   popular: boolean;
   // Navigation fields
   slug: string;
@@ -20,6 +22,7 @@ export const cities: City[] = [
     listings: "310+",
     priceFrom: 140,
     image: "/images/cities/san-salvador.jpg",
+    description: "Vista aérea del skyline de San Salvador con el volcán Quetzaltepec al fondo.",
     popular: true,
     slug: "san-salvador",
     lat: 13.6929,
@@ -33,6 +36,7 @@ export const cities: City[] = [
     listings: "120+",
     priceFrom: 195,
     image: "/images/cities/antiguo-cuscatlan.jpg",
+    description: "Bulevares arbolados y edificios modernos en Antiguo Cuscatlán, El Salvador.",
     popular: true,
     slug: "antiguo-cuscatlan",
     lat: 13.6699,
@@ -46,6 +50,7 @@ export const cities: City[] = [
     listings: "80+",
     priceFrom: 130,
     image: "/images/cities/santa-ana.jpg",
+    description: "Catedral neogótica y plaza colonial del centro histórico de Santa Ana, El Salvador.",
     popular: false,
     slug: "santa-ana",
     lat: 13.9946,
@@ -59,6 +64,7 @@ export const cities: City[] = [
     listings: "55+",
     priceFrom: 120,
     image: "/images/cities/san-miguel.jpg",
+    description: "Ciudad de San Miguel con el volcán Chaparrastique y arquitectura colonial al fondo.",
     popular: false,
     slug: "san-miguel",
     lat: 13.4833,
@@ -72,6 +78,7 @@ export const cities: City[] = [
     listings: "40+",
     priceFrom: 110,
     image: "/images/cities/soyapango.jpg",
+    description: "Calle comercial vibrante con locales coloridos y vida comunitaria en Soyapango.",
     popular: false,
     slug: "soyapango",
     lat: 13.71,
