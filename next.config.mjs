@@ -3,7 +3,7 @@
 // DO NOT MODIFY THIS FILE DIRECTLY.
 // EDIT THE USER CONFIG IN ./next.user-config.ts INSTEAD.
 
-import userConfigImport from './next.user-config.ts'
+import userConfigImport from './next.user-config.mjs'
 import { fileURLToPath } from 'url'
 import path from 'path'
 
