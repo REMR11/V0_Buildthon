@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 import { ChevronDown, MessageCircle, HelpCircle } from "lucide-react";
+import {
+  motion,
+  Reveal,
+  Stagger,
+  TextReveal,
+  Magnetic,
+  staggerItem,
+  AnimatePresence,
+} from "@/components/motion";
 
 const faqs = [
   {
@@ -68,33 +77,49 @@ function FAQItem({
   onToggle: () => void;
 }) {
   return (
-    <div className="bg-card rounded-2xl border border-border overflow-hidden">
+    <motion.div
+      className="bg-card rounded-2xl border border-border overflow-hidden"
+      whileHover={{ borderColor: "var(--primary)", transition: { duration: 0.2 } }}
+      layout
+    >
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-secondary/60 transition-colors"
         aria-expanded={isOpen}
       >
         <span className="font-semibold text-foreground leading-snug">{question}</span>
-        <ChevronDown
-          size={20}
-          className={`text-muted flex-shrink-0 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          aria-hidden="true"
-        />
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-shrink-0"
+        >
+          <ChevronDown size={20} className="text-muted" aria-hidden="true" />
+        </motion.div>
       </button>
 
-      {/* Smooth height animation via max-height */}
-      <div
-        className={`transition-all duration-300 ease-out overflow-hidden ${
-          isOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="px-6 pb-6 border-t border-border">
-          <p className="text-muted leading-relaxed pt-4 text-sm">{answer}</p>
-        </div>
-      </div>
-    </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-6 border-t border-border">
+              <motion.p
+                className="text-muted leading-relaxed pt-4 text-sm"
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+              >
+                {answer}
+              </motion.p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
@@ -110,7 +135,6 @@ export default function FAQ() {
   const toggle = (globalIndex: number) =>
     setOpenIndex(openIndex === globalIndex ? null : globalIndex);
 
-  // Resolve local visible index back to the global faqs index
   const globalIndex = (item: (typeof faqs)[0]) => faqs.indexOf(item);
 
   return (
@@ -118,81 +142,108 @@ export default function FAQ() {
       <div className="max-w-3xl mx-auto px-5">
         {/* Header */}
         <div className="text-center mb-12">
-          <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
-            Resolvemos tus dudas
-          </span>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            {"Las dudas que todos tienen (y sus respuestas)"}
-          </h2>
-          <p className="text-muted text-lg leading-relaxed">
-            {"Todo lo que necesitas saber antes de encontrar a tu roommate ideal."}
-          </p>
+          <Reveal direction="up">
+            <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
+              Resolvemos tus dudas
+            </span>
+          </Reveal>
+          <TextReveal
+            text="Las dudas que todos tienen (y sus respuestas)"
+            as="h2"
+            className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4"
+            delay={0.1}
+          />
+          <Reveal direction="up" delay={0.3}>
+            <p className="text-muted text-lg leading-relaxed">
+              {"Todo lo que necesitas saber antes de encontrar a tu roommate ideal."}
+            </p>
+          </Reveal>
         </div>
 
         {/* Category filter pills */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => {
-                setActiveCategory(cat);
-                setOpenIndex(null);
-              }}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                activeCategory === cat
-                  ? "bg-primary text-white shadow-primary-sm"
-                  : "bg-secondary border border-border text-muted hover:text-foreground hover:border-primary/30"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        <Reveal direction="up" delay={0.2}>
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {CATEGORIES.map((cat) => (
+              <motion.button
+                key={cat}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  setOpenIndex(null);
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                  activeCategory === cat
+                    ? "bg-primary text-white shadow-primary-sm"
+                    : "bg-secondary border border-border text-muted hover:text-foreground hover:border-primary/30"
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                layout
+              >
+                {cat}
+              </motion.button>
+            ))}
+          </div>
+        </Reveal>
 
         {/* Accordion list */}
-        <div className="flex flex-col gap-3 mb-12">
+        <Stagger className="flex flex-col gap-3 mb-12" stagger={0.08} key={activeCategory}>
           {visible.map((faq) => {
             const idx = globalIndex(faq);
             return (
-              <FAQItem
-                key={idx}
-                question={faq.question}
-                answer={faq.answer}
-                isOpen={openIndex === idx}
-                onToggle={() => toggle(idx)}
-              />
+              <motion.div key={idx} variants={staggerItem}>
+                <FAQItem
+                  question={faq.question}
+                  answer={faq.answer}
+                  isOpen={openIndex === idx}
+                  onToggle={() => toggle(idx)}
+                />
+              </motion.div>
             );
           })}
-        </div>
+        </Stagger>
 
         {/* Still have questions */}
-        <div className="bg-secondary rounded-2xl p-8 text-center border border-border">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <MessageCircle size={24} className="text-primary" aria-hidden="true" />
-          </div>
-          <h3 className="font-semibold text-xl text-foreground mb-2">
-            ¿Tienes más preguntas?
-          </h3>
-          <p className="text-muted mb-6 max-w-sm mx-auto text-sm leading-relaxed">
-            Nuestro equipo de soporte está disponible en español, lunes a domingo
-            de 8 am a 10 pm (hora CDMX).
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="/ayuda"
-              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-full transition-all shadow-primary-sm hover:shadow-primary-md hover:-translate-y-0.5 text-sm"
+        <Reveal direction="up" delay={0.1}>
+          <motion.div
+            className="bg-secondary rounded-2xl p-8 text-center border border-border"
+            whileHover={{ y: -4, transition: { type: "spring", stiffness: 200 } }}
+          >
+            <motion.div
+              className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"
+              whileHover={{ rotate: 360, transition: { duration: 0.6 } }}
             >
-              <HelpCircle size={16} aria-hidden="true" />
-              Centro de ayuda
-            </a>
-            <a
-              href="/contacto"
-              className="inline-flex items-center justify-center gap-2 bg-card hover:bg-secondary border border-border text-foreground font-semibold px-6 py-3 rounded-full transition-all text-sm"
-            >
-              Contactar soporte
-            </a>
-          </div>
-        </div>
+              <MessageCircle size={24} className="text-primary" aria-hidden="true" />
+            </motion.div>
+            <h3 className="font-semibold text-xl text-foreground mb-2">
+              {"\u00bfTienes m\u00e1s preguntas?"}
+            </h3>
+            <p className="text-muted mb-6 max-w-sm mx-auto text-sm leading-relaxed">
+              Nuestro equipo de soporte est\u00e1 disponible en espa\u00f1ol, lunes a domingo
+              de 8 am a 10 pm (hora CDMX).
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Magnetic strength={5}>
+                <motion.a
+                  href="/ayuda"
+                  className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-full transition-colors shadow-primary-sm text-sm"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <HelpCircle size={16} aria-hidden="true" />
+                  Centro de ayuda
+                </motion.a>
+              </Magnetic>
+              <motion.a
+                href="/contacto"
+                className="inline-flex items-center justify-center gap-2 bg-card hover:bg-secondary border border-border text-foreground font-semibold px-6 py-3 rounded-full transition-colors text-sm"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Contactar soporte
+              </motion.a>
+            </div>
+          </motion.div>
+        </Reveal>
       </div>
     </section>
   );
