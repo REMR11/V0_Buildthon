@@ -39,24 +39,24 @@ const ownerSteps = [
 const tenantSteps = [
   {
     icon: Search,
-    title: "Busca tu habitacion",
+    title: "Busca tu zona y roommate",
     description:
-      "Filtra por ciudad, precio, y caracteristicas. Sin grupos de WhatsApp ni informacion falsa.",
-    benefits: ["Fotos reales", "Precios transparentes"],
+      "Filtra por ciudad, precio y estilo de vida. Nidoo te muestra habitaciones y personas compatibles contigo.",
+    benefits: ["Match por compatibilidad", "Precios transparentes"],
   },
   {
     icon: MessageCircle,
-    title: "Contacta al propietario",
+    title: "Conoce a tu match",
     description:
-      "Chatea directamente, agenda visitas y resuelve todas tus dudas antes de comprometerte.",
-    benefits: ["Respuesta rapida", "Sin intermediarios"],
+      "Chatea con tu posible roommate y con el propietario. Resuelve dudas y asegurate de que hay buena vibra antes de comprometerte.",
+    benefits: ["Chat integrado", "Perfiles verificados"],
   },
   {
     icon: KeyRound,
-    title: "Mudate con tranquilidad",
+    title: "Mudate y divide gastos",
     description:
-      "Firma el contrato digital y paga en linea. Tu nuevo hogar en pocos dias.",
-    benefits: ["Proceso 100% digital", "Soporte 24/7"],
+      "Firma el contrato digital, divide la renta y empieza a ahorrar desde el dia uno. Asi de facil.",
+    benefits: ["Ahorro desde el dia 1", "Soporte 24/7"],
   },
 ];
 
@@ -71,14 +71,13 @@ export default function HowItWorks() {
         {/* Header */}
         <div className="text-center mb-12">
           <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
-            Simple y transparente
+            Tan facil como pedir comida
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            Como funciona Nidoo?
+            {"De 'busco roomie' a 'ya tengo depa' en 3 pasos"}
           </h2>
           <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
-            Ya seas propietario o inquilino, el proceso es sencillo, seguro y
-            completamente digital.
+            {"Sin grupos de WhatsApp interminables ni depositos perdidos. Todo es digital, verificado y sin drama."}
           </p>
         </div>
 

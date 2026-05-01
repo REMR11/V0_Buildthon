@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { ArrowRight, Check, Mail, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Mail, Users, TrendingDown, ShieldCheck } from "lucide-react";
 
 export default function CtaBanner() {
   const [email, setEmail] = useState("");
@@ -12,7 +11,7 @@ export default function CtaBanner() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    
+
     setIsLoading(true);
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -27,29 +26,28 @@ export default function CtaBanner() {
           {/* Left side - Content */}
           <div>
             <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-white/70 mb-4">
-              <Sparkles size={14} />
-              Empieza hoy - Es gratis
+              <Users size={14} />
+              Tu roommate te esta esperando
             </span>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-white text-balance mb-6 leading-tight">
-              Un hogar que se siente tuyo
+              {"Deja de pagar renta completa. Encuentra a tu match."}
             </h2>
             <p className="text-white/80 text-lg leading-relaxed mb-8">
-              Miles de personas ya encontraron su lugar en Nidoo. Unete a la
-              comunidad que esta cambiando la forma de rentar en America Latina.
+              {"Miles de jovenes ya comparten depa con alguien compatible y pagan la mitad. La pregunta no es si puedes confiar en un desconocido, sino por que seguir pagando de mas."}
             </p>
 
             {/* Benefits list */}
             <ul className="space-y-3 mb-8">
               {[
-                "Publica gratis y gana hasta $3,000/mes",
-                "Sin comisiones ocultas ni sorpresas",
-                "Soporte en español 24/7",
+                { icon: TrendingDown, text: "Ahorra hasta 50% en tu renta mensual" },
+                { icon: Users, text: "Match por gustos, horarios y estilo de vida" },
+                { icon: ShieldCheck, text: "Perfiles verificados con ID oficial" },
               ].map((benefit, i) => (
                 <li key={i} className="flex items-center gap-3 text-white/90">
                   <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                    <Check size={12} className="text-white" />
+                    <benefit.icon size={12} className="text-white" />
                   </div>
-                  <span>{benefit}</span>
+                  <span>{benefit.text}</span>
                 </li>
               ))}
             </ul>
@@ -57,22 +55,22 @@ export default function CtaBanner() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="/publicar"
+                href="/registro"
                 className="flex items-center justify-center gap-2 bg-white hover:bg-secondary text-primary font-semibold text-base px-8 py-4 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                <span>Publicar mi cuarto</span>
+                <span>Encontrar mi roommate</span>
                 <ArrowRight size={18} />
               </a>
               <a
                 href="/explorar"
                 className="flex items-center justify-center gap-2 bg-transparent hover:bg-white/10 text-white border border-white/40 font-semibold text-base px-8 py-4 rounded-full transition-colors"
               >
-                Buscar habitacion
+                Ver habitaciones
               </a>
             </div>
           </div>
 
-          {/* Right side - Email form + Image */}
+          {/* Right side - Email form */}
           <div className="relative">
             {/* Decorative background */}
             <div className="absolute -top-8 -right-8 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
@@ -80,17 +78,23 @@ export default function CtaBanner() {
 
             {/* Card */}
             <div className="relative bg-white rounded-3xl p-8 shadow-2xl">
-              {/* Image */}
-              <div className="relative h-48 rounded-2xl overflow-hidden mb-6">
-                <Image
-                  src="/images/rooms/room-3.jpg"
-                  alt="Habitacion acogedora"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent" />
-                <div className="absolute bottom-3 left-3 glass rounded-lg px-3 py-1.5">
-                  <p className="text-foreground font-semibold text-sm">Disponible ahora</p>
+              {/* Savings calculator preview */}
+              <div className="bg-secondary rounded-2xl p-5 mb-6">
+                <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-3">
+                  Ejemplo real de ahorro
+                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted">Renta solo/a</span>
+                  <span className="text-sm font-semibold text-foreground line-through opacity-60">$380 USD/mes</span>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-muted">Con tu roommate</span>
+                  <span className="text-sm font-bold text-primary">$190 USD/mes</span>
+                </div>
+                <div className="h-px bg-border my-2" />
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-foreground">Ahorras al mes</span>
+                  <span className="text-lg font-bold text-primary">$190 USD</span>
                 </div>
               </div>
 
@@ -98,10 +102,10 @@ export default function CtaBanner() {
               {!isSubmitted ? (
                 <div>
                   <h3 className="font-semibold text-lg text-foreground mb-2">
-                    Recibe las mejores ofertas
+                    {"Se de los primeros en usar el matching"}
                   </h3>
                   <p className="text-muted text-sm mb-4">
-                    Suscribete y te avisamos cuando haya habitaciones nuevas en tu ciudad.
+                    {"Dejanos tu correo y te avisamos cuando el sistema de compatibilidad este listo en tu ciudad."}
                   </p>
                   <form onSubmit={handleSubmit} className="space-y-3">
                     <div className="relative">
@@ -124,14 +128,14 @@ export default function CtaBanner() {
                         <span>Enviando...</span>
                       ) : (
                         <>
-                          <span>Suscribirme</span>
+                          <span>Avisarme cuando este listo</span>
                           <ArrowRight size={16} />
                         </>
                       )}
                     </button>
                   </form>
                   <p className="text-muted text-xs text-center mt-3">
-                    Sin spam. Puedes cancelar cuando quieras.
+                    Sin spam. Solo lo importante.
                   </p>
                 </div>
               ) : (
@@ -140,10 +144,10 @@ export default function CtaBanner() {
                     <Check size={32} className="text-green-600" />
                   </div>
                   <h3 className="font-semibold text-lg text-foreground mb-2">
-                    Te has suscrito!
+                    {"Listo, estas en la lista!"}
                   </h3>
                   <p className="text-muted text-sm">
-                    Te avisaremos cuando haya habitaciones nuevas disponibles.
+                    Te avisaremos en cuanto el matching este disponible.
                   </p>
                 </div>
               )}
@@ -153,7 +157,7 @@ export default function CtaBanner() {
             <div className="absolute -top-4 -right-4 bg-white rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-sm font-medium text-foreground">
-                127 nuevas esta semana
+                2,300+ en lista de espera
               </span>
             </div>
           </div>

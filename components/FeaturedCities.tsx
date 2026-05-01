@@ -51,14 +51,13 @@ export default function FeaturedCities() {
       <div className="max-w-6xl mx-auto px-5">
         <div className="text-center mb-12">
           <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
-            Estamos cerca de ti
+            {"Donde ya puedes encontrar roomie"}
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            Ciudades disponibles
+            {"Ciudades donde Nidoo ya conecta roommates"}
           </h2>
           <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
-            Nidoo ya está presente en las principales ciudades de América
-            Latina, con nuevas ciudades sumándose cada mes.
+            {"Miles de jovenes ya comparten depa en estas ciudades. Cada mes sumamos mas."}
           </p>
         </div>
 

@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import CompatibilityMatch from "@/components/CompatibilityMatch";
 import HowItWorks from "@/components/HowItWorks";
 import TrustSignals from "@/components/TrustSignals";
 import FeaturedRooms from "@/components/FeaturedRooms";
@@ -13,6 +14,7 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
+      <CompatibilityMatch />
       <HowItWorks />
       <TrustSignals />
       <FeaturedRooms />

@@ -284,14 +284,13 @@ export default function FeaturedRooms() {
       <div className="max-w-6xl mx-auto px-5">
         <div className="text-center mb-12">
           <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
-            Descubre tu proximo hogar
+            {"Espacios para compartir"}
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            Habitaciones destacadas
+            {"Habitaciones listas para ti y tu roommate"}
           </h2>
           <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
-            Explora habitaciones verificadas y listas para mudarte. Todas con
-            contrato digital y seguridad garantizada.
+            {"Todas verificadas, con contrato digital y listas para dividir. Encuentra la que va con tu presupuesto y estilo."}
           </p>
         </div>
 

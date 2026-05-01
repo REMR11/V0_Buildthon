@@ -37,44 +37,44 @@ const signals = [
 
 const testimonials = [
   {
-    name: "Rosa Méndez",
-    city: "Guadalajara, México",
+    name: "Rosa M.",
+    city: "Guadalajara, M\u00e9xico",
     quote:
-      "Tenía miedo de rentar a un extraño, pero con Nidoo verifiqué la identidad del inquilino y firmamos el contrato en línea. Fue facilísimo.",
+      "Ten\u00eda miedo de que un desconocido rentara mi cuarto extra, pero Nidoo verific\u00f3 todo. Ahora tengo una roomie incre\u00edble y un ingreso extra cada mes.",
     stars: 5,
     role: "Propietaria",
   },
   {
-    name: "Andrés Villanueva",
-    city: "Bogotá, Colombia",
+    name: "Andr\u00e9s V.",
+    city: "Bogot\u00e1, Colombia",
     quote:
-      "Llegué a Bogotá a estudiar sin conocer a nadie. En tres días encontré una habitación limpia y segura. Nidoo me salvó el semestre.",
+      "Llegu\u00e9 a Bogot\u00e1 a estudiar sin conocer a nadie. Nidoo me match\u00f3 con un roomie que tambi\u00e9n es gamer y madrugador. Ahorro $200 al mes y tengo un amigo nuevo.",
     stars: 5,
-    role: "Inquilino",
+    role: "Roommate",
   },
   {
-    name: "Camila Ríos",
-    city: "Lima, Perú",
+    name: "Camila R.",
+    city: "Lima, Per\u00fa",
     quote:
-      "Buscaba en grupos de WhatsApp y era un caos. Nidoo tiene fotos reales, precios claros y atención inmediata. No vuelvo a buscar diferente.",
+      "Buscaba en grupos de WhatsApp y era puro caso. Con Nidoo encontr\u00e9 una compa que tiene el mismo ritmo de vida que yo. Mejor imposible.",
     stars: 5,
-    role: "Inquilina",
+    role: "Roommate",
   },
   {
-    name: "Miguel Santos",
-    city: "Medellín, Colombia",
+    name: "Miguel S.",
+    city: "Medell\u00edn, Colombia",
     quote:
-      "Como propietario, Nidoo me quitó el estrés de encontrar inquilinos confiables. El proceso de verificación y el contrato digital son increíbles.",
+      "Yo pensaba que vivir con un extra\u00f1o era mala idea. Pero Nidoo me conect\u00f3 con alguien que tambi\u00e9n hace home office y le gusta el gym. Ya llevamos 8 meses.",
     stars: 5,
-    role: "Propietario",
+    role: "Roommate",
   },
   {
-    name: "Laura Herrera",
+    name: "Laura H.",
     city: "San Salvador, El Salvador",
     quote:
-      "La plataforma es muy intuitiva. Encontré mi habitación ideal en menos de una semana y todo el proceso fue 100% digital.",
+      "Entre la renta y los servicios gastaba m\u00e1s de la mitad de mi sueldo. Ahora comparto con mi roomie y me sobra para vivir bien. Deber\u00eda ser ilegal no usar Nidoo.",
     stars: 5,
-    role: "Inquilina",
+    role: "Roommate",
   },
 ];
 
@@ -185,14 +185,13 @@ export default function TrustSignals() {
         {/* Header */}
         <div className="text-center mb-16">
           <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
-            Tu tranquilidad, nuestra prioridad
+            Seguridad real, no promesas
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            Diseñado para inspirar confianza
+            {"Vivir con alguien nuevo no tiene que dar miedo"}
           </h2>
           <p className="text-muted text-lg max-w-xl mx-auto leading-relaxed">
-            Cada función de Nidoo fue pensada para proteger a propietarios e
-            inquilinos por igual.
+            {"Verificamos identidades, protegemos pagos y documentamos todo. Para que compartir depa sea una buena experiencia, no un salto de fe."}
           </p>
         </div>
 
@@ -269,10 +268,10 @@ export default function TrustSignals() {
         <div>
           <div className="text-center mb-8">
             <h3 className="font-serif text-2xl font-bold text-foreground mb-2">
-              Lo que dicen nuestros usuarios
+              {"Historias de roommates reales"}
             </h3>
             <p className="text-muted">
-              Miles de historias de éxito en toda Latinoamérica
+              {"Gente como tu que se animo a compartir y no se arrepiente"}
             </p>
           </div>
 

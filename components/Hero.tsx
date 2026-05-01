@@ -2,51 +2,22 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Calendar, Wallet } from "lucide-react";
+import { Search, MapPin, Calendar, Wallet, Users, TrendingDown } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 const cities = [
-  { name: "Guadalajara", flag: "🇲🇽", country: "México" },
-  { name: "Bogotá", flag: "🇨🇴", country: "Colombia" },
-  { name: "Lima", flag: "🇵🇪", country: "Perú" },
-  { name: "Medellín", flag: "🇨🇴", country: "Colombia" },
-  { name: "San Salvador", flag: "🇸🇻", country: "El Salvador" },
+  { name: "Guadalajara", flag: "\u{1F1F2}\u{1F1FD}", country: "M\u00e9xico" },
+  { name: "Bogot\u00e1", flag: "\u{1F1E8}\u{1F1F4}", country: "Colombia" },
+  { name: "Lima", flag: "\u{1F1F5}\u{1F1EA}", country: "Per\u00fa" },
+  { name: "Medell\u00edn", flag: "\u{1F1E8}\u{1F1F4}", country: "Colombia" },
+  { name: "San Salvador", flag: "\u{1F1F8}\u{1F1FB}", country: "El Salvador" },
 ];
 
-const stats = [
-  { value: "+5,000", label: "habitaciones" },
-  { value: "+12,000", label: "inquilinos" },
-  { value: "5", label: "países" },
+const socialProof = [
+  { value: "+12,000", label: "roommates conectados" },
+  { value: "50%", label: "ahorro promedio" },
+  { value: "5", label: "pa\u00edses" },
 ];
-
-function useCountUp(end: number, duration = 2000) {
-  const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !started) setStarted(true); },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [started]);
-
-  useEffect(() => {
-    if (!started) return;
-    let startTime: number | null = null;
-    const step = (ts: number) => {
-      if (!startTime) startTime = ts;
-      const progress = Math.min((ts - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [started, end, duration]);
-
-  return { count, ref };
-}
 
 export default function Hero() {
   const router = useRouter();
@@ -70,13 +41,13 @@ export default function Hero() {
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/hero-home.jpg"
-          alt="Interior acogedor de hogar latinoamericano"
+          alt="Jovenes compartiendo un espacio de vida moderno"
           fill
           className="object-cover"
           priority
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/75 via-foreground/45 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent" />
       </div>
 
       {/* Main content */}
@@ -85,19 +56,31 @@ export default function Hero() {
 
           {/* Badge */}
           <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-primary bg-white/95 px-4 py-2 rounded-full mb-8 shadow-primary-sm animate-fade-in-up">
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse-soft" />
-            Plataforma de renta en América Latina
+            <Users size={14} className="text-primary" />
+            Encuentra a tu roommate ideal
           </span>
 
           {/* Headline */}
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight text-balance mb-5 animate-fade-in-up-delay-1">
-            Tu hogar lejos de casa, con total confianza
+            Renta a la mitad, vive con alguien que te cae bien
           </h1>
 
           {/* Subheadline */}
-          <p className="text-white/85 text-lg leading-relaxed mb-8 text-pretty animate-fade-in-up-delay-2">
-            Habitaciones verificadas para estudiantes y trabajadores en toda América Latina.
+          <p className="text-white/90 text-lg leading-relaxed mb-4 text-pretty animate-fade-in-up-delay-2">
+            {"Nidoo te conecta con personas de gustos similares para compartir depa y dividir gastos. Sin awk, sin riesgo, sin pagar de m\u00e1s."}
           </p>
+
+          {/* Value proposition pills */}
+          <div className="flex flex-wrap gap-2 mb-8 animate-fade-in-up-delay-2">
+            <span className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm text-white text-sm px-3 py-1.5 rounded-full border border-white/20">
+              <TrendingDown size={14} />
+              Ahorra hasta 50%
+            </span>
+            <span className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm text-white text-sm px-3 py-1.5 rounded-full border border-white/20">
+              <Users size={14} />
+              Match por compatibilidad
+            </span>
+          </div>
 
           {/* Search form */}
           <form
@@ -120,7 +103,7 @@ export default function Hero() {
                   <div className="flex-1 min-w-0">
                     <span className="block text-xs font-medium text-foreground/50 mb-0.5">Ciudad</span>
                     <span className="text-foreground font-medium text-sm truncate block">
-                      {selectedCity || "¿A dónde vas?"}
+                      {selectedCity || "\u00bfD\u00f3nde quieres vivir?"}
                     </span>
                   </div>
                 </button>
@@ -178,7 +161,8 @@ export default function Hero() {
                 <Wallet size={16} className="text-primary shrink-0" />
                 <div className="flex-1 min-w-0">
                   <label htmlFor="hero-budget" className="block text-xs font-medium text-foreground/50 mb-0.5">
-                    Hasta <span className="text-primary font-semibold">${budget} USD/mes</span>
+                    {"Hasta "}
+                    <span className="text-primary font-semibold">${budget} USD/mes</span>
                   </label>
                   <input
                     id="hero-budget"
@@ -200,16 +184,16 @@ export default function Hero() {
               className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3.5 rounded-xl transition-all shadow-primary-md hover:shadow-primary-lg hover:-translate-y-0.5"
             >
               <Search size={18} />
-              <span>Buscar habitación</span>
+              <span>Encontrar mi roommate</span>
             </button>
           </form>
 
-          {/* Compact stats strip */}
+          {/* Social proof strip */}
           <div
             className="flex items-center gap-6 animate-fade-in-up"
             style={{ animationDelay: "0.5s", opacity: 0 }}
           >
-            {stats.map((stat, i) => (
+            {socialProof.map((stat, i) => (
               <div key={stat.label} className="flex items-center gap-2">
                 {i > 0 && <span className="w-1 h-1 rounded-full bg-white/30" aria-hidden="true" />}
                 <span className="text-white font-bold text-base">{stat.value}</span>
@@ -220,22 +204,23 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Floating room card — desktop only */}
+      {/* Floating compatibility card -- desktop only */}
       <div className="hidden lg:block absolute right-10 bottom-20 z-10 animate-float">
-        <div className="relative w-56 h-72 rounded-2xl overflow-hidden shadow-primary-lg -rotate-3">
-          <Image
-            src="/images/rooms/room-1.jpg"
-            alt="Habitación disponible en Guadalajara"
-            fill
-            className="object-cover"
-            sizes="224px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent" />
-          <div className="absolute bottom-4 left-3 right-3">
-            <div className="glass rounded-lg px-3 py-2">
-              <p className="text-foreground font-semibold text-sm">Desde $180/mes</p>
-              <p className="text-foreground/70 text-xs">Guadalajara, MX</p>
+        <div className="relative w-64 bg-white/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-primary-lg -rotate-3 p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
+              <Users size={20} className="text-primary" />
             </div>
+            <div>
+              <p className="text-foreground font-semibold text-sm">Match encontrado</p>
+              <p className="text-muted text-xs">92% compatible</p>
+            </div>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <span className="text-xs bg-secondary text-foreground/70 px-2 py-1 rounded-full">Gamer</span>
+            <span className="text-xs bg-secondary text-foreground/70 px-2 py-1 rounded-full">Madrugador</span>
+            <span className="text-xs bg-secondary text-foreground/70 px-2 py-1 rounded-full">No fuma</span>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">$190/mes c/u</span>
           </div>
         </div>
       </div>
