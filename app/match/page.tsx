@@ -5,85 +5,155 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Sun, Moon, Coffee, Briefcase,
-  Volume2, VolumeX, Users, Music,
-  Dog, Ban, Cigarette,
+  Volume2, VolumeX, Music,
+  Dog, Ban, Cigarette, Wine,
   Sparkles, Wind, CheckCircle2,
   ArrowRight, ArrowLeft, ChevronRight,
   GraduationCap, UserCheck, Heart,
+  Home, Users, Thermometer, Clock,
+  UtensilsCrossed, MessageSquare, ShieldAlert,
+  Sofa, Laptop, MapPin,
 } from "lucide-react";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-type Step1 = {
+// ── Types ─────────────────────────────────────────────────────────────────────
+type Prefs = {
+  // Paso 1 — Ritmo de vida
   schedule: string;
+  daysHome: string;
+  // Paso 2 — Convivencia diaria
   noise: string;
-  visits: string;
-};
-
-type Step2 = {
+  kitchenUse: string;
+  commonTemp: string;
+  bathroomTime: string;
+  // Paso 3 — Habitos
   pets: string;
   smoking: string;
+  alcohol: string;
   cleanliness: string;
-};
-
-type Step3 = {
+  visits: string;
+  overnightGuests: string;
+  // Paso 4 — Perfil social
+  personality: string;
+  conflictStyle: string;
+  cohabitation: string;
+  // Paso 5 — Busqueda
   budget: number;
   city: string;
   roommateGender: string;
   occupation: string;
 };
 
-type Prefs = Step1 & Step2 & Step3;
+const INITIAL_PREFS: Prefs = {
+  schedule: "", daysHome: "",
+  noise: "", kitchenUse: "", commonTemp: "", bathroomTime: "",
+  pets: "", smoking: "", alcohol: "", cleanliness: "", visits: "", overnightGuests: "",
+  personality: "", conflictStyle: "", cohabitation: "",
+  budget: 300, city: "", roommateGender: "", occupation: "",
+};
 
-// ── Option definitions ────────────────────────────────────────────────────────
+// ── Option data ───────────────────────────────────────────────────────────────
 const scheduleOptions = [
-  { id: "manana",      Icon: Sun,       label: "Madrugador/a",  desc: "Antes de las 7am ya estoy activo/a" },
-  { id: "noche",       Icon: Moon,      label: "Nocturno/a",    desc: "Soy mas productivo/a de noche" },
-  { id: "flexible",    Icon: Wind,      label: "Flexible",      desc: "Vivo sin horario fijo" },
-  { id: "home-office", Icon: Coffee,    label: "Home office",   desc: "Trabajo desde casa todo el dia" },
+  { id: "manana",      Icon: Sun,     label: "Madrugador/a",   desc: "Activo/a antes de las 7am, en cama antes de las 11pm" },
+  { id: "noche",       Icon: Moon,    label: "Nocturno/a",     desc: "Me activo a partir del mediodia, duermo tarde" },
+  { id: "flexible",    Icon: Wind,    label: "Flexible",       desc: "Mi horario cambia segun el dia" },
+  { id: "home-office", Icon: Laptop,  label: "Home office",    desc: "Trabajo desde casa, estoy en el depa la mayor parte del dia" },
+];
+
+const daysHomeOptions = [
+  { id: "pocos",        Icon: MapPin,  label: "Pocos dias",     desc: "Solo vengo a dormir, casi siempre estoy fuera" },
+  { id: "mitad",        Icon: Home,    label: "La mitad",       desc: "Mitad del tiempo en casa, mitad afuera" },
+  { id: "casi-siempre", Icon: Sofa,   label: "Casi siempre",   desc: "El depa es mi base de operaciones" },
 ];
 
 const noiseOptions = [
-  { id: "muy-tranquilo", Icon: VolumeX,  label: "Muy tranquilo/a", desc: "Silencio total, por favor" },
-  { id: "normal",        Icon: Volume2,  label: "Normal",           desc: "Algo de ruido no molesta" },
-  { id: "social",        Icon: Music,    label: "Social",            desc: "Me gusta el ambiente animado" },
+  { id: "muy-tranquilo", Icon: VolumeX,  label: "Silencio total",   desc: "Musica y TV a volumen bajo o con audifonos siempre" },
+  { id: "normal",        Icon: Volume2,  label: "Ambiente normal",   desc: "Algo de ruido no molesta, pero no extremos" },
+  { id: "social",        Icon: Music,    label: "Casa animada",      desc: "Me gusta tener ambiente, musica, gente" },
 ];
 
-const visitsOptions = [
-  { id: "casi-nunca",     Icon: CheckCircle2, label: "Casi nunca",     desc: "Prefiero mucha privacidad" },
-  { id: "a-veces",        Icon: Users,        label: "A veces",         desc: "Visitas ocasionales ok" },
-  { id: "seguido",        Icon: Users,        label: "Seguido",          desc: "Mis amigos son de la casa" },
-  { id: "pareja-estable", Icon: Heart,        label: "Pareja estable",  desc: "Mi pareja visita regularmente" },
+const kitchenOptions = [
+  { id: "raramente",     Icon: Ban,              label: "Casi no cocino",   desc: "Pido o como fuera, la cocina es solo para calentar cosas" },
+  { id: "cocino-seguido", Icon: UtensilsCrossed, label: "Cocino seguido",   desc: "Preparo mis comidas casi todos los dias" },
+  { id: "meal-prep",     Icon: UtensilsCrossed,  label: "Meal prep",        desc: "Cocino en cantidad los fines de semana para toda la semana" },
+];
+
+const tempOptions = [
+  { id: "frio",     Icon: Thermometer, label: "Fresco / AC fuerte", desc: "Prefiero el ambiente frio, AC o ventilador siempre" },
+  { id: "templado", Icon: Wind,        label: "Templado",            desc: "Ni muy frio ni muy caliente" },
+  { id: "calido",   Icon: Sun,         label: "Calidito",            desc: "Prefiero el calor, nada de AC directo" },
+];
+
+const bathroomOptions = [
+  { id: "rapido",  Icon: Clock, label: "Rapido (5-10 min)", desc: "Me ducho y salgo, sin rodeos" },
+  { id: "normal",  Icon: Clock, label: "Normal (15-20 min)", desc: "Me tomo mi tiempo sin exagerar" },
+  { id: "largo",   Icon: Clock, label: "Me tomo mi tiempo",  desc: "El bano es mi tiempo de relajacion" },
 ];
 
 const petsOptions = [
-  { id: "no",         Icon: Ban,  label: "Sin mascotas",      desc: "Prefiero un hogar sin animales" },
-  { id: "si-pequena", Icon: Dog,  label: "Tengo una pequeña", desc: "Gato o perro chico" },
-  { id: "si-grande",  Icon: Dog,  label: "Tengo una grande",  desc: "Perro mediano o grande" },
-  { id: "acepta",     Icon: Dog,  label: "Acepto mascotas",   desc: "Me encantan los animales" },
+  { id: "no",          Icon: Ban,  label: "Sin mascotas",       desc: "Prefiero un hogar sin animales" },
+  { id: "si-pequena",  Icon: Dog,  label: "Tengo mascota chica", desc: "Gato o perro pequeno" },
+  { id: "si-grande",   Icon: Dog,  label: "Tengo mascota grande", desc: "Perro mediano o grande" },
+  { id: "acepta",      Icon: Dog,  label: "Me encantan los animales", desc: "Acepto cualquier mascota con gusto" },
 ];
 
 const smokingOptions = [
-  { id: "no",     Icon: Ban,       label: "No fumo",        desc: "Ambiente libre de tabaco" },
-  { id: "afuera", Icon: Wind,      label: "Solo afuera",    desc: "Fumo pero no en espacios comunes" },
-  { id: "si",     Icon: Cigarette, label: "Fumo en casa",   desc: "Necesito poder fumar adentro" },
+  { id: "no",     Icon: Ban,       label: "No fumo",         desc: "Ambiente 100% libre de humo" },
+  { id: "afuera", Icon: Wind,      label: "Solo afuera",     desc: "Fumo pero siempre en exterior" },
+  { id: "si",     Icon: Cigarette, label: "Fumo en casa",    desc: "Necesito poder fumar en interiores" },
+];
+
+const alcoholOptions = [
+  { id: "no",       Icon: Ban,   label: "No tomo",          desc: "Nunca o casi nunca alcohol" },
+  { id: "social",   Icon: Wine,  label: "Socialmente",      desc: "Solo en salidas o reuniones, no en casa entre semana" },
+  { id: "frecuente", Icon: Wine, label: "Con frecuencia",   desc: "Un par de cervezas en la noche es normal para mi" },
 ];
 
 const cleanlinessOptions = [
-  { id: "muy-ordenado", Icon: Sparkles,    label: "Muy ordenado/a", desc: "Un lugar para cada cosa" },
-  { id: "normal",       Icon: CheckCircle2, label: "Normal",          desc: "Limpio pero no perfeccionista" },
-  { id: "relajado",     Icon: Wind,        label: "Relajado/a",     desc: "Me tomo el orden con calma" },
+  { id: "muy-ordenado", Icon: Sparkles,     label: "Muy ordenado/a",  desc: "Cada cosa en su lugar, limpio activamente y espero lo mismo" },
+  { id: "normal",       Icon: CheckCircle2, label: "Normal",           desc: "Limpio cuando hace falta, no soy perfeccionista" },
+  { id: "relajado",     Icon: Wind,         label: "Relajado/a",      desc: "Me tomo el orden con calma, no me estresa el desorden ocasional" },
+];
+
+const visitsOptions = [
+  { id: "casi-nunca", Icon: Home,  label: "Casi nunca",    desc: "El depa es un espacio privado, rara vez traigo gente" },
+  { id: "a-veces",    Icon: Users, label: "A veces",        desc: "Visitas ocasionales estan bien" },
+  { id: "seguido",    Icon: Users, label: "Seguido",        desc: "Mis amigos vienen con frecuencia, es parte de mi vida social" },
+];
+
+const overnightOptions = [
+  { id: "no",      Icon: Ban,     label: "No, prefiero no", desc: "Los invitados se van ese mismo dia" },
+  { id: "a-veces", Icon: Heart,   label: "A veces si",      desc: "Puede pasar ocasionalmente, con aviso" },
+  { id: "si",      Icon: Heart,   label: "Si, sin problema", desc: "Es algo que puede pasar regularmente" },
+];
+
+const personalityOptions = [
+  { id: "introvertido",  Icon: Home,  label: "Introvertido/a",  desc: "Recargo energia en soledad, necesito mi espacio y silencio" },
+  { id: "ambivertido",   Icon: Wind,  label: "Ambivertido/a",   desc: "Depende del dia: a veces quiero socializar, a veces no" },
+  { id: "extrovertido",  Icon: Users, label: "Extrovertido/a",  desc: "Me energizo con la gente, me gusta convivir y platicar" },
+];
+
+const conflictOptions = [
+  { id: "hablar-directo", Icon: MessageSquare, label: "Hablo directo",   desc: "Si hay problema, lo digo de frente y en el momento" },
+  { id: "escrito",        Icon: MessageSquare, label: "Prefiero texto",   desc: "Me cuesta hablarlo en persona, prefiero mandar un mensaje" },
+  { id: "evitar",         Icon: ShieldAlert,   label: "Evito conflictos", desc: "Prefiero dejar pasar las cosas si no son graves" },
+];
+
+const cohabitationOptions = [
+  { id: "independencia-total", Icon: Home,  label: "Independencia total", desc: "Somos vecinos, cada quien vive su vida, minima interaccion" },
+  { id: "cordial",             Icon: Wind,  label: "Cordial y respetuoso", desc: "Buenos dias, buen trato, sin necesidad de ser mejores amigos" },
+  { id: "convivir",            Icon: Users, label: "Convivir y conectar",  desc: "Me gustaria hacer actividades juntos, salir, platicar" },
 ];
 
 const genderOptions = [
-  { id: "sin-preferencia", Icon: Users,     label: "Sin preferencia" },
-  { id: "mismo-genero",    Icon: UserCheck, label: "Mismo genero"    },
-  { id: "cualquiera",      Icon: Heart,     label: "Cualquiera"      },
+  { id: "sin-preferencia", Icon: Users,     label: "Sin preferencia",    desc: "El genero no importa" },
+  { id: "mismo-genero",    Icon: UserCheck, label: "Mismo genero",       desc: "Prefiero vivir con alguien de mi mismo genero" },
+  { id: "cualquiera",      Icon: Heart,     label: "Cualquiera esta bien", desc: "Sin restriccion de genero" },
 ];
 
 const occupationOptions = [
-  { id: "sin-preferencia", Icon: Users,         label: "Sin preferencia" },
-  { id: "estudiante",      Icon: GraduationCap, label: "Estudiante"      },
-  { id: "profesional",     Icon: Briefcase,     label: "Profesional"     },
+  { id: "sin-preferencia", Icon: Users,         label: "Sin preferencia", desc: "No importa la ocupacion" },
+  { id: "estudiante",      Icon: GraduationCap, label: "Estudiante",      desc: "Prefiero vivir con alguien que estudie" },
+  { id: "profesional",     Icon: Briefcase,     label: "Profesional",     desc: "Prefiero alguien que trabaje" },
 ];
 
 const cities = [
@@ -95,9 +165,8 @@ const cities = [
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 function OptionCard({
-  id, Icon, label, desc, selected, onClick,
+  Icon, label, desc, selected, onClick,
 }: {
-  id: string;
   Icon: React.ElementType;
   label: string;
   desc?: string;
@@ -108,39 +177,39 @@ function OptionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`relative flex flex-col items-start gap-3 p-5 rounded-2xl border-2 text-left transition-all duration-200 w-full
+      className={`relative flex flex-col items-start gap-3 p-4 rounded-2xl border-2 text-left transition-all duration-200 w-full
         ${selected
           ? "border-primary bg-primary/8 shadow-primary-sm"
           : "border-border bg-card hover:border-primary/40 hover:bg-secondary"
         }`}
     >
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shrink-0
         ${selected ? "bg-primary text-white" : "bg-muted-bg text-muted"}`}>
-        <Icon size={22} />
+        <Icon size={20} />
       </div>
       <div>
         <p className={`font-semibold text-sm leading-tight ${selected ? "text-foreground" : "text-foreground/80"}`}>
           {label}
         </p>
         {desc && (
-          <p className="text-xs text-muted mt-0.5 leading-relaxed">{desc}</p>
+          <p className="text-xs text-muted mt-1 leading-relaxed">{desc}</p>
         )}
       </div>
       {selected && (
         <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-          <CheckCircle2 size={12} className="text-white" strokeWidth={3} />
+          <CheckCircle2 size={11} className="text-white" strokeWidth={3} />
         </span>
       )}
     </button>
   );
 }
 
-function SmallOptionCard({
-  id, Icon, label, selected, onClick,
+function SmallCard({
+  Icon, label, desc, selected, onClick,
 }: {
-  id: string;
   Icon: React.ElementType;
   label: string;
+  desc?: string;
   selected: boolean;
   onClick: () => void;
 }) {
@@ -148,23 +217,40 @@ function SmallOptionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all duration-200
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all duration-200 text-left w-full
         ${selected
           ? "border-primary bg-primary/8 text-primary shadow-primary-sm"
           : "border-border bg-card hover:border-primary/40 text-foreground/70 hover:text-foreground"
         }`}
     >
-      <Icon size={16} />
-      {label}
-      {selected && <CheckCircle2 size={14} className="ml-auto text-primary" strokeWidth={3} />}
+      <Icon size={16} className="shrink-0" />
+      <span className="flex-1">{label}</span>
+      {selected && <CheckCircle2 size={14} className="text-primary shrink-0" strokeWidth={3} />}
     </button>
   );
 }
 
-// ── Progress bar ──────────────────────────────────────────────────────────────
+function Question({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mb-8">
+      <h2 className="font-semibold text-foreground text-base mb-0.5">{title}</h2>
+      <p className="text-sm text-muted mb-4 leading-relaxed">{subtitle}</p>
+      {children}
+    </div>
+  );
+}
+
 function ProgressBar({ step, total }: { step: number; total: number }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
       {Array.from({ length: total }).map((_, i) => (
         <div
           key={i}
@@ -178,49 +264,66 @@ function ProgressBar({ step, total }: { step: number; total: number }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-const TOTAL_STEPS = 3;
+const TOTAL_STEPS = 5;
 
-const INITIAL_PREFS: Prefs = {
-  schedule: "",
-  noise: "",
-  visits: "",
-  pets: "",
-  smoking: "",
-  cleanliness: "",
-  budget: 300,
-  city: "",
-  roommateGender: "",
-  occupation: "",
-};
+const stepMeta = [
+  { label: "Tu ritmo de vida",    hint: "Cuando y cuanto tiempo estas en casa" },
+  { label: "Convivencia diaria",  hint: "Ruido, cocina, temperatura y bano" },
+  { label: "Tus habitos",         hint: "Mascotas, tabaco, alcohol y orden" },
+  { label: "Tu perfil social",    hint: "Como convives y manejas los conflictos" },
+  { label: "Tu busqueda",         hint: "Presupuesto, ciudad y preferencias" },
+];
 
 export default function MatchQuizPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [prefs, setPrefs] = useState<Prefs>(INITIAL_PREFS);
-  const [direction, setDirection] = useState<"forward" | "back">("forward");
 
   const set = <K extends keyof Prefs>(key: K, value: Prefs[K]) =>
     setPrefs((p) => ({ ...p, [key]: value }));
 
-  const step1Valid = !!prefs.schedule && !!prefs.noise && !!prefs.visits;
-  const step2Valid = !!prefs.pets && !!prefs.smoking && !!prefs.cleanliness;
-  const step3Valid = !!prefs.city && !!prefs.roommateGender && !!prefs.occupation;
+  const stepValid: Record<number, boolean> = {
+    1: !!prefs.schedule && !!prefs.daysHome,
+    2: !!prefs.noise && !!prefs.kitchenUse && !!prefs.commonTemp && !!prefs.bathroomTime,
+    3: !!prefs.pets && !!prefs.smoking && !!prefs.alcohol && !!prefs.cleanliness && !!prefs.visits && !!prefs.overnightGuests,
+    4: !!prefs.personality && !!prefs.conflictStyle && !!prefs.cohabitation,
+    5: !!prefs.city && !!prefs.roommateGender && !!prefs.occupation,
+  };
 
-  const canNext = step === 1 ? step1Valid : step === 2 ? step2Valid : step3Valid;
+  const canNext = stepValid[step] ?? false;
+
+  // Count answered questions per step for progress inside step
+  const stepAnswered: Record<number, number> = {
+    1: [prefs.schedule, prefs.daysHome].filter(Boolean).length,
+    2: [prefs.noise, prefs.kitchenUse, prefs.commonTemp, prefs.bathroomTime].filter(Boolean).length,
+    3: [prefs.pets, prefs.smoking, prefs.alcohol, prefs.cleanliness, prefs.visits, prefs.overnightGuests].filter(Boolean).length,
+    4: [prefs.personality, prefs.conflictStyle, prefs.cohabitation].filter(Boolean).length,
+    5: [prefs.city, prefs.roommateGender, prefs.occupation].filter(Boolean).length,
+  };
+  const stepTotal: Record<number, number> = { 1: 2, 2: 4, 3: 6, 4: 3, 5: 3 };
 
   function goNext() {
     if (!canNext) return;
     if (step < TOTAL_STEPS) {
-      setDirection("forward");
       setStep((s) => s + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       const params = new URLSearchParams({
         schedule: prefs.schedule,
+        daysHome: prefs.daysHome,
         noise: prefs.noise,
-        visits: prefs.visits,
+        kitchenUse: prefs.kitchenUse,
+        commonTemp: prefs.commonTemp,
+        bathroomTime: prefs.bathroomTime,
         pets: prefs.pets,
         smoking: prefs.smoking,
+        alcohol: prefs.alcohol,
         cleanliness: prefs.cleanliness,
+        visits: prefs.visits,
+        overnightGuests: prefs.overnightGuests,
+        personality: prefs.personality,
+        conflictStyle: prefs.conflictStyle,
+        cohabitation: prefs.cohabitation,
         budget: String(prefs.budget),
         city: prefs.city,
         roommateGender: prefs.roommateGender,
@@ -232,12 +335,12 @@ export default function MatchQuizPage() {
 
   function goBack() {
     if (step > 1) {
-      setDirection("back");
       setStep((s) => s - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
-  const stepLabels = ["Tu ritmo de vida", "Tus habitos", "Tu roommate ideal"];
+  const meta = stepMeta[step - 1];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -248,8 +351,11 @@ export default function MatchQuizPage() {
             nidoo
           </Link>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted font-medium hidden sm:block">
-              Paso {step} de {TOTAL_STEPS} — {stepLabels[step - 1]}
+            <span className="text-xs font-medium text-muted hidden sm:block">
+              Paso {step}/{TOTAL_STEPS} — {meta.label}
+            </span>
+            <span className="text-xs text-muted/60 hidden sm:block">
+              {stepAnswered[step]}/{stepTotal[step]} preguntas
             </span>
             <Link href="/" className="text-sm text-muted hover:text-foreground transition-colors">
               Salir
@@ -264,161 +370,213 @@ export default function MatchQuizPage() {
       {/* Body */}
       <main className="flex-1 max-w-2xl mx-auto w-full px-5 py-10">
 
-        {/* ── Step 1: Ritmo de vida ─────────────────────────────────────────── */}
-        {step === 1 && (
-          <div key="step1" className="animate-scale-in">
-            <div className="mb-8">
-              <span className="text-xs font-semibold tracking-widest uppercase text-primary block mb-2">
-                Paso 1 de 3
-              </span>
-              <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-3">
-                {"Cuentanos tu ritmo de vida"}
-              </h1>
-              <p className="text-muted leading-relaxed">
-                {"Estas respuestas nos ayudan a encontrar personas con las que realmente puedas convivir."}
-              </p>
-            </div>
+        {/* Step header */}
+        <div className="mb-8">
+          <span className="text-xs font-semibold tracking-widest uppercase text-primary block mb-2">
+            Paso {step} de {TOTAL_STEPS}
+          </span>
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-2">
+            {meta.label}
+          </h1>
+          <p className="text-muted leading-relaxed">{meta.hint}</p>
+        </div>
 
-            {/* Schedule */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">
-                Tu horario en casa
-              </h2>
-              <p className="text-sm text-muted mb-4">{"Cuando sueles estar mas activo/a"}</p>
+        {/* ── Paso 1: Ritmo de vida ──────────────────────────────────────────── */}
+        {step === 1 && (
+          <div className="animate-scale-in">
+            <Question
+              title="Tu horario en casa"
+              subtitle="Cuando sueles estar mas activo/a durante el dia"
+            >
               <div className="grid grid-cols-2 gap-3">
                 {scheduleOptions.map((o) => (
-                  <OptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.schedule === o.id}
-                    onClick={() => set("schedule", o.id)}
-                  />
+                  <OptionCard key={o.id} {...o} selected={prefs.schedule === o.id} onClick={() => set("schedule", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
 
-            {/* Noise */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Ruido y ambiente</h2>
-              <p className="text-sm text-muted mb-4">{"Que tan activo prefieres el ambiente en casa"}</p>
+            <Question
+              title="Cuanto tiempo pasas en casa"
+              subtitle="Considerando dias laborales y fines de semana en promedio"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {daysHomeOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.daysHome === o.id} onClick={() => set("daysHome", o.id)} />
+                ))}
+              </div>
+            </Question>
+          </div>
+        )}
+
+        {/* ── Paso 2: Convivencia diaria ─────────────────────────────────────── */}
+        {step === 2 && (
+          <div className="animate-scale-in">
+            <Question
+              title="Nivel de ruido en casa"
+              subtitle="El ambiente que necesitas para sentirte comodo/a"
+            >
               <div className="grid grid-cols-3 gap-3">
                 {noiseOptions.map((o) => (
-                  <OptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.noise === o.id}
-                    onClick={() => set("noise", o.id)}
-                  />
+                  <OptionCard key={o.id} {...o} selected={prefs.noise === o.id} onClick={() => set("noise", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
 
-            {/* Visits */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Visitas en casa</h2>
-              <p className="text-sm text-muted mb-4">{"Con que frecuencia recibes visitas"}</p>
-              <div className="grid grid-cols-2 gap-3">
-                {visitsOptions.map((o) => (
-                  <OptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.visits === o.id}
-                    onClick={() => set("visits", o.id)}
-                  />
+            <Question
+              title="Tu relacion con la cocina"
+              subtitle="Con que frecuencia y de que forma usas la cocina compartida"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {kitchenOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.kitchenUse === o.id} onClick={() => set("kitchenUse", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
+
+            <Question
+              title="Temperatura ideal en casa"
+              subtitle="Tu preferencia de clima en los espacios comunes"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {tempOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.commonTemp === o.id} onClick={() => set("commonTemp", o.id)} />
+                ))}
+              </div>
+            </Question>
+
+            <Question
+              title="Tiempo en el bano"
+              subtitle="Tu rutina de bano en un dia normal"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {bathroomOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.bathroomTime === o.id} onClick={() => set("bathroomTime", o.id)} />
+                ))}
+              </div>
+            </Question>
           </div>
         )}
 
-        {/* ── Step 2: Habitos ───────────────────────────────────────────────── */}
-        {step === 2 && (
-          <div key="step2" className="animate-scale-in">
-            <div className="mb-8">
-              <span className="text-xs font-semibold tracking-widest uppercase text-primary block mb-2">
-                Paso 2 de 3
-              </span>
-              <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-3">
-                {"Tus habitos del dia a dia"}
-              </h1>
-              <p className="text-muted leading-relaxed">
-                {"Sin juicios. Solo queremos asegurarnos de que los habitos de tu roommate sean compatibles con los tuyos."}
-              </p>
-            </div>
-
-            {/* Pets */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Mascotas</h2>
-              <p className="text-sm text-muted mb-4">{"Tu relacion con los animales"}</p>
+        {/* ── Paso 3: Habitos ───────────────────────────────────────────────── */}
+        {step === 3 && (
+          <div className="animate-scale-in">
+            <Question
+              title="Mascotas"
+              subtitle="Tu relacion actual con los animales en casa"
+            >
               <div className="grid grid-cols-2 gap-3">
                 {petsOptions.map((o) => (
-                  <OptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.pets === o.id}
-                    onClick={() => set("pets", o.id)}
-                  />
+                  <OptionCard key={o.id} {...o} selected={prefs.pets === o.id} onClick={() => set("pets", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
 
-            {/* Smoking */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Tabaco</h2>
-              <p className="text-sm text-muted mb-4">{"Tu relacion con el cigarro"}</p>
+            <Question
+              title="Tabaco"
+              subtitle="Tu habito con el cigarro o vaper"
+            >
               <div className="grid grid-cols-3 gap-3">
                 {smokingOptions.map((o) => (
-                  <OptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.smoking === o.id}
-                    onClick={() => set("smoking", o.id)}
-                  />
+                  <OptionCard key={o.id} {...o} selected={prefs.smoking === o.id} onClick={() => set("smoking", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
 
-            {/* Cleanliness */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Orden y limpieza</h2>
-              <p className="text-sm text-muted mb-4">{"Tu nivel de orden en espacios compartidos"}</p>
+            <Question
+              title="Alcohol"
+              subtitle="Con que frecuencia consumes alcohol en casa"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {alcoholOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.alcohol === o.id} onClick={() => set("alcohol", o.id)} />
+                ))}
+              </div>
+            </Question>
+
+            <Question
+              title="Orden y limpieza"
+              subtitle="Tu nivel de orden en los espacios compartidos de la casa"
+            >
               <div className="grid grid-cols-3 gap-3">
                 {cleanlinessOptions.map((o) => (
-                  <OptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.cleanliness === o.id}
-                    onClick={() => set("cleanliness", o.id)}
-                  />
+                  <OptionCard key={o.id} {...o} selected={prefs.cleanliness === o.id} onClick={() => set("cleanliness", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
+
+            <Question
+              title="Visitas en casa"
+              subtitle="Con que frecuencia recibes amigos u otras personas"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {visitsOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.visits === o.id} onClick={() => set("visits", o.id)} />
+                ))}
+              </div>
+            </Question>
+
+            <Question
+              title="Invitados a dormir"
+              subtitle="Que tan seguido se queda alguien a pasar la noche"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {overnightOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.overnightGuests === o.id} onClick={() => set("overnightGuests", o.id)} />
+                ))}
+              </div>
+            </Question>
           </div>
         )}
 
-        {/* ── Step 3: Roommate ideal ────────────────────────────────────────── */}
-        {step === 3 && (
-          <div key="step3" className="animate-scale-in">
-            <div className="mb-8">
-              <span className="text-xs font-semibold tracking-widest uppercase text-primary block mb-2">
-                Paso 3 de 3
-              </span>
-              <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-3">
-                {"Cuantame de tu roommate ideal"}
-              </h1>
-              <p className="text-muted leading-relaxed">
-                {"Un poco mas de contexto para afinar los resultados."}
-              </p>
-            </div>
+        {/* ── Paso 4: Perfil social ─────────────────────────────────────────── */}
+        {step === 4 && (
+          <div className="animate-scale-in">
+            <Question
+              title="Como eres socialmente"
+              subtitle="Tu forma natural de relacionarte con las personas con quienes vives"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {personalityOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.personality === o.id} onClick={() => set("personality", o.id)} />
+                ))}
+              </div>
+            </Question>
 
+            <Question
+              title="Como manejas los conflictos"
+              subtitle="Si hay algo que te molesta de tu roommate, como prefieres abordarlo"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {conflictOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.conflictStyle === o.id} onClick={() => set("conflictStyle", o.id)} />
+                ))}
+              </div>
+            </Question>
+
+            <Question
+              title="Que tipo de convivencia buscas"
+              subtitle="El nivel de relacion que quieres tener con tu roommate en el dia a dia"
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {cohabitationOptions.map((o) => (
+                  <OptionCard key={o.id} {...o} selected={prefs.cohabitation === o.id} onClick={() => set("cohabitation", o.id)} />
+                ))}
+              </div>
+            </Question>
+          </div>
+        )}
+
+        {/* ── Paso 5: Busqueda ─────────────────────────────────────────────── */}
+        {step === 5 && (
+          <div className="animate-scale-in">
             {/* Budget */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-1">
-                <h2 className="font-semibold text-foreground">Presupuesto maximo / mes</h2>
+                <h2 className="font-semibold text-foreground text-base">Presupuesto maximo por mes</h2>
                 <span className="text-lg font-bold text-primary">${prefs.budget} USD</span>
               </div>
-              <p className="text-sm text-muted mb-5">
-                {"El costo TOTAL de la renta que puedes pagar (ya dividida entre roommates)"}
+              <p className="text-sm text-muted mb-5 leading-relaxed">
+                El costo de renta total que puedes pagar (ya dividido entre roommates)
               </p>
               <input
                 type="range"
@@ -436,14 +594,14 @@ export default function MatchQuizPage() {
             </div>
 
             {/* City */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Ciudad</h2>
-              <p className="text-sm text-muted mb-4">{"Donde quieres vivir"}</p>
+            <Question
+              title="Ciudad"
+              subtitle="Donde quieres vivir"
+            >
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {cities.map((city) => (
-                  <SmallOptionCard
+                  <SmallCard
                     key={city}
-                    id={city}
                     Icon={ChevronRight}
                     label={city}
                     selected={prefs.city === city}
@@ -451,44 +609,36 @@ export default function MatchQuizPage() {
                   />
                 ))}
               </div>
-            </div>
+            </Question>
 
-            {/* Roommate gender */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Genero del roommate</h2>
-              <p className="text-sm text-muted mb-4">{"Tu preferencia (puedes no tener ninguna)"}</p>
-              <div className="flex flex-wrap gap-2">
+            {/* Gender */}
+            <Question
+              title="Genero del roommate"
+              subtitle="Tu preferencia de genero (respuesta honesta, sin juicios)"
+            >
+              <div className="flex flex-col gap-2">
                 {genderOptions.map((o) => (
-                  <SmallOptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.roommateGender === o.id}
-                    onClick={() => set("roommateGender", o.id)}
-                  />
+                  <SmallCard key={o.id} {...o} selected={prefs.roommateGender === o.id} onClick={() => set("roommateGender", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
 
             {/* Occupation */}
-            <div className="mb-8">
-              <h2 className="font-semibold text-foreground mb-1">Ocupacion preferida</h2>
-              <p className="text-sm text-muted mb-4">{"El perfil de tu roommate ideal"}</p>
-              <div className="flex flex-wrap gap-2">
+            <Question
+              title="Ocupacion del roommate"
+              subtitle="El perfil de vida que encajaria mejor contigo"
+            >
+              <div className="flex flex-col gap-2">
                 {occupationOptions.map((o) => (
-                  <SmallOptionCard
-                    key={o.id}
-                    {...o}
-                    selected={prefs.occupation === o.id}
-                    onClick={() => set("occupation", o.id)}
-                  />
+                  <SmallCard key={o.id} {...o} selected={prefs.occupation === o.id} onClick={() => set("occupation", o.id)} />
                 ))}
               </div>
-            </div>
+            </Question>
           </div>
         )}
 
         {/* ── Navigation ───────────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between pt-4 border-t border-border mt-6">
+        <div className="flex items-center justify-between pt-6 border-t border-border mt-4">
           {step > 1 ? (
             <button
               type="button"
@@ -501,19 +651,26 @@ export default function MatchQuizPage() {
           ) : (
             <div />
           )}
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={!canNext}
-            className={`flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all duration-200
-              ${canNext
-                ? "bg-primary hover:bg-primary-hover text-white shadow-primary-md animate-glow"
-                : "bg-muted-bg text-muted cursor-not-allowed"
-              }`}
-          >
-            {step === TOTAL_STEPS ? "Ver mis matches" : "Siguiente"}
-            <ArrowRight size={16} />
-          </button>
+
+          <div className="flex items-center gap-3">
+            {/* Mini progress inside step */}
+            <span className="text-xs text-muted hidden sm:block">
+              {stepAnswered[step]}/{stepTotal[step]} respondidas
+            </span>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={!canNext}
+              className={`flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm transition-all duration-200
+                ${canNext
+                  ? "bg-primary hover:bg-primary-hover text-white shadow-primary-md"
+                  : "bg-muted-bg text-muted cursor-not-allowed"
+                }`}
+            >
+              {step === TOTAL_STEPS ? "Ver mis matches" : "Siguiente"}
+              <ArrowRight size={16} />
+            </button>
+          </div>
         </div>
       </main>
     </div>
