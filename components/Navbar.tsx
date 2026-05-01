@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Map, Search, Heart, User, Home } from "lucide-react";
+import { Menu, X, Map, Search, Heart, User, Home, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "@/components/motion";
 
 const NAV_SECTIONS = [
@@ -127,6 +127,13 @@ export default function Navbar() {
                 )}
               </motion.a>
             ))}
+            <Link
+              href="/match"
+              className="flex items-center gap-1.5 hover:text-primary transition-colors font-semibold text-primary"
+            >
+              <Sparkles size={14} />
+              Encontrar match
+            </Link>
             <Link
               href="/explorar"
               className="flex items-center gap-1.5 hover:text-primary transition-colors"
@@ -270,6 +277,14 @@ export default function Navbar() {
                   {label}
                 </motion.a>
               ))}
+              <Link
+                href="/match"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-1.5 text-primary font-semibold hover:text-primary-hover transition-colors"
+              >
+                <Sparkles size={14} />
+                Encontrar match
+              </Link>
               <Link
                 href="/explorar"
                 onClick={() => setOpen(false)}
