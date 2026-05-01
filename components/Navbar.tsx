@@ -295,10 +295,10 @@ export default function Navbar() {
                   Iniciar sesi\u00f3n
                 </Link>
                 <Link
-                  href="/registro"
+                  href="/explorar"
                   className="bg-primary hover:bg-primary-hover text-white text-center px-4 py-2.5 rounded-full transition-colors font-semibold"
                 >
-                  Publicar cuarto
+                  Buscar cuarto
                 </Link>
               </div>
             </motion.div>

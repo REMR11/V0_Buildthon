@@ -70,7 +70,7 @@ const tenantSteps = [
 ];
 
 export default function HowItWorks() {
-  const [role, setRole] = useState<"owner" | "tenant">("owner");
+  const [role, setRole] = useState<"owner" | "tenant">("tenant");
 
   const steps = role === "owner" ? ownerSteps : tenantSteps;
 
