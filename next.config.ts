@@ -73,11 +73,6 @@ const nextConfig: NextConfig = {
   },
 
   // ---------------------------------------------------------------------------
-  // Performance: enable React Compiler (stable in Next 16)
-  // ---------------------------------------------------------------------------
-  reactCompiler: true,
-
-  // ---------------------------------------------------------------------------
   // Standalone output makes Docker / serverless containers leaner
   // ---------------------------------------------------------------------------
   output: "standalone",
