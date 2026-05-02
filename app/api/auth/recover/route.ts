@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { authRatelimit, storeOtp } from "@/lib/redis";
 
 // ---------------------------------------------------------------------------
@@ -8,8 +9,9 @@ import { authRatelimit, storeOtp } from "@/lib/redis";
 // so the flow can be tested without an email provider.
 // ---------------------------------------------------------------------------
 
+// Use crypto.randomInt for a cryptographically secure OTP instead of Math.random
 function generateOtp(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100_000, 999_999).toString();
 }
 
 const KNOWN_EMAILS = ["demo@nidoo.com"];

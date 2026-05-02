@@ -22,6 +22,15 @@ const MOCK_USERS = [
 
 export async function POST(req: NextRequest) {
   try {
+    // Reject requests with unexpected Content-Type to prevent CSRF-style attacks
+    const ct = req.headers.get("content-type") ?? "";
+    if (!ct.includes("application/json")) {
+      return NextResponse.json(
+        { error: "Content-Type debe ser application/json." },
+        { status: 415 },
+      );
+    }
+
     // Rate limiting
     if (authRatelimit) {
       const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";

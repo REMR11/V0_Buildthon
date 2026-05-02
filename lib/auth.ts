@@ -1,3 +1,4 @@
+import "@/lib/env"; // validate required env vars at startup
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
@@ -22,8 +23,17 @@ async function getUserByEmail(email: string) {
   return MOCK_USERS.find((u) => u.email === email) ?? null;
 }
 
+// Fail fast if AUTH_SECRET is missing in production so it is never silently
+// omitted from a deployed environment.
+if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
+  throw new Error(
+    "AUTH_SECRET environment variable is required in production. " +
+      "Generate one with: openssl rand -base64 32",
+  );
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: process.env.AUTH_SECRET ?? "nidoo-dev-secret-change-in-prod",
+  secret: process.env.AUTH_SECRET,
   providers: [
     // --- Google OAuth (requires GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET) ---
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
@@ -47,7 +57,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: string;
           password: string;
         };
-        if (!email || !password) return null;
+        // Basic type guards — reject non-string or suspiciously long values
+        if (
+          typeof email !== "string" ||
+          typeof password !== "string" ||
+          email.length > 254 ||
+          password.length > 128 ||
+          !email ||
+          !password
+        ) {
+          return null;
+        }
 
         const user = await getUserByEmail(email);
         if (!user) return null;
