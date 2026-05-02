@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      data-scroll-behavior="smooth"
       className={`${plusJakarta.variable} ${lora.variable} bg-background`}
     >
       <body className="min-h-full font-sans antialiased">{children}</body>

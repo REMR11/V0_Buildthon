@@ -174,6 +174,26 @@ body {
   animation: badge-bounce 2s ease-in-out infinite;
 }
 
+/* Slide in right — quiz question forward */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Slide in left (reverse) — quiz question backward */
+@keyframes slide-in-left-reverse {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in-left-reverse {
+  animation: slide-in-left-reverse 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 /* ================================================================ */
 /*  INTERACTIVE STYLES                                                */
 /* ================================================================ */
@@ -258,8 +278,8 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
-/* Smooth scroll */
-html {
+/* Smooth scroll — data attribute for Next.js route transitions */
+html[data-scroll-behavior="smooth"] {
   scroll-behavior: smooth;
 }
 
