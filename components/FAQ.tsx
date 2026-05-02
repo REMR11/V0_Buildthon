@@ -2,55 +2,64 @@
 
 import { useState } from "react";
 import { ChevronDown, MessageCircle, HelpCircle } from "lucide-react";
+import {
+  motion,
+  Reveal,
+  Stagger,
+  TextReveal,
+  Magnetic,
+  staggerItem,
+  AnimatePresence,
+} from "@/components/motion";
 
 const faqs = [
   {
+    category: "Roommates",
+    question: "\u00bfC\u00f3mo funciona el matching de compatibilidad?",
+    answer:
+      "Al registrarte, completas un perfil con tus h\u00e1bitos, horarios, gustos y preferencias de convivencia. Nuestro sistema analiza esta info y te muestra personas con un alto porcentaje de compatibilidad. T\u00fa decides con qui\u00e9n quieres hablar y conocer antes de comprometerte a compartir.",
+  },
+  {
+    category: "Roommates",
+    question: "\u00bfY si no me llevo bien con mi roommate?",
+    answer:
+      "Antes de firmar cualquier contrato, te recomendamos chatear y conocer a tu posible roommate por la plataforma. Si despu\u00e9s de mudarte surge alg\u00fan problema, Nidoo act\u00faa como mediador neutral. Adem\u00e1s, los contratos incluyen cl\u00e1usulas de salida para que nadie se quede atrapado en una situaci\u00f3n inc\u00f3moda.",
+  },
+  {
+    category: "Seguridad",
+    question: "\u00bfC\u00f3mo s\u00e9 que mi roommate es una persona confiable?",
+    answer:
+      "Todos los usuarios de Nidoo pasan por verificaci\u00f3n de identidad con documento oficial (KYC). Adem\u00e1s, puedes ver rese\u00f1as de otros roommates anteriores, su porcentaje de compatibilidad contigo, y chatear antes de tomar cualquier decisi\u00f3n. Nada se hace a ciegas.",
+  },
+  {
+    category: "Seguridad",
+    question: "\u00bfEl contrato digital tiene validez legal?",
+    answer:
+      "S\u00ed. Los contratos de Nidoo son redactados por nuestro equipo legal y cumplen con la legislaci\u00f3n de arrendamiento de M\u00e9xico, Colombia, Per\u00fa y El Salvador. Incluyen firma electr\u00f3nica con validez jur\u00eddica, timestamp certificado, y son almacenados de forma segura.",
+  },
+  {
+    category: "Ahorro",
+    question: "\u00bfCu\u00e1nto puedo ahorrar al compartir con un roommate?",
+    answer:
+      "En promedio, nuestros usuarios ahorran entre un 40% y 50% en renta mensual al compartir. Adem\u00e1s del ahorro en renta, tambi\u00e9n dividen servicios (luz, agua, internet) y en muchos casos hasta la despensa. Es una diferencia real en tu bolsillo.",
+  },
+  {
+    category: "Ahorro",
+    question: "\u00bfEs gratis usar Nidoo?",
+    answer:
+      "Registrarte, crear tu perfil y buscar roommates es completamente gratis. Solo aplicamos una peque\u00f1a comisi\u00f3n cuando se firma un contrato exitoso, para cubrir los costos del contrato digital, verificaciones y la protecci\u00f3n de pagos.",
+  },
+  {
     category: "Proceso",
-    question: "¿Cómo funciona el proceso para encontrar habitación?",
+    question: "\u00bfPuedo visitar la habitaci\u00f3n antes de rentarla?",
     answer:
-      "Es muy sencillo: busca por ciudad, fecha y presupuesto, explora habitaciones con fotos reales y precios transparentes, contacta al propietario por nuestro chat, y firma el contrato digital. Todo sin salir de la plataforma. El proceso completo puede tomar desde un día.",
-  },
-  {
-    category: "Proceso",
-    question: "¿Puedo visitar la habitación antes de rentarla?",
-    answer:
-      "Absolutamente. Recomendamos coordinar una visita a través del chat de la plataforma antes de firmar cualquier contrato. Algunos propietarios también ofrecen video tours para inquilinos que están en otra ciudad. Nunca pagues ni firmes sin estar seguro de tu decisión.",
-  },
-  {
-    category: "Seguridad",
-    question: "¿Qué significa que una habitación esté 'Verificada'?",
-    answer:
-      "El badge 'Verificado' indica que el propietario pasó por nuestro proceso KYC: verificación de identidad con documento oficial, validación de la propiedad del inmueble, y revisión de las fotos por nuestro equipo. Esto garantiza que la habitación existe y que el propietario es quien dice ser.",
-  },
-  {
-    category: "Seguridad",
-    question: "¿El contrato digital tiene validez legal?",
-    answer:
-      "Sí. Los contratos de Nidoo son redactados por nuestro equipo legal y cumplen con la legislación de arrendamiento de México, Colombia, Perú y El Salvador. Incluyen firma electrónica con validez jurídica, timestamp certificado, y son almacenados de forma segura. Ambas partes reciben una copia al correo electrónico.",
-  },
-  {
-    category: "Seguridad",
-    question: "¿Qué pasa si tengo problemas con mi inquilino o propietario?",
-    answer:
-      "Nidoo actúa como árbitro neutral en disputas. Documentamos el estado del inmueble con fotos al inicio y al final de la renta. Si surge algún problema, nuestro equipo de soporte media entre las partes basándose en la evidencia documentada y aplica las políticas de protección correspondientes.",
-  },
-  {
-    category: "Pagos",
-    question: "¿Es gratis publicar mi habitación?",
-    answer:
-      "Sí, publicar tu habitación en Nidoo es completamente gratuito. No cobramos comisiones por publicar ni por recibir solicitudes. Solo aplicamos una pequeña comisión cuando se firma un contrato exitoso, para cubrir los costos del contrato digital y la protección de pagos.",
-  },
-  {
-    category: "Pagos",
-    question: "¿Cómo se procesan los pagos mensuales?",
-    answer:
-      "Los pagos se procesan automáticamente cada mes a través de nuestra plataforma segura. El inquilino puede pagar con tarjeta de crédito, débito o transferencia bancaria. El propietario recibe el pago en su cuenta en 2–3 días hábiles, descontando la comisión de servicio.",
+      "Absolutamente. Recomendamos coordinar una visita a trav\u00e9s del chat de la plataforma antes de firmar. Algunos propietarios tambi\u00e9n ofrecen video tours para quienes est\u00e1n en otra ciudad. Nunca pagues ni firmes sin estar seguro.",
   },
   {
     category: "General",
-    question: "¿En qué ciudades está disponible Nidoo?",
+    question: "\u00bfEn qu\u00e9 ciudades est\u00e1 disponible Nidoo?",
     answer:
-      "Actualmente operamos en 5 países: México (Guadalajara, CDMX, Monterrey), Colombia (Bogotá, Medellín), Perú (Lima), y El Salvador (San Salvador). Estamos expandiéndonos rápidamente. Si tu ciudad no está disponible aún, puedes suscribirte para recibir notificaciones cuando lleguemos.",
+      "Actualmente operamos en 5 pa\u00edses: M\u00e9xico (Guadalajara, CDMX, Monterrey), Colombia (Bogot\u00e1, Medell\u00edn), Per\u00fa (Lima), y El Salvador (San Salvador). Estamos expandi\u00e9ndonos r\u00e1pidamente. Si tu ciudad no est\u00e1 disponible a\u00fan, suscr\u00edbete y te avisamos.",
   },
 ];
 
@@ -68,33 +77,49 @@ function FAQItem({
   onToggle: () => void;
 }) {
   return (
-    <div className="bg-card rounded-2xl border border-border overflow-hidden">
+    <motion.div
+      className="bg-card rounded-2xl border border-border overflow-hidden"
+      whileHover={{ borderColor: "var(--primary)", transition: { duration: 0.2 } }}
+      layout
+    >
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-secondary/60 transition-colors"
         aria-expanded={isOpen}
       >
         <span className="font-semibold text-foreground leading-snug">{question}</span>
-        <ChevronDown
-          size={20}
-          className={`text-muted flex-shrink-0 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          aria-hidden="true"
-        />
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-shrink-0"
+        >
+          <ChevronDown size={20} className="text-muted" aria-hidden="true" />
+        </motion.div>
       </button>
 
-      {/* Smooth height animation via max-height */}
-      <div
-        className={`transition-all duration-300 ease-out overflow-hidden ${
-          isOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="px-6 pb-6 border-t border-border">
-          <p className="text-muted leading-relaxed pt-4 text-sm">{answer}</p>
-        </div>
-      </div>
-    </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-6 border-t border-border">
+              <motion.p
+                className="text-muted leading-relaxed pt-4 text-sm"
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
+              >
+                {answer}
+              </motion.p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
@@ -110,7 +135,6 @@ export default function FAQ() {
   const toggle = (globalIndex: number) =>
     setOpenIndex(openIndex === globalIndex ? null : globalIndex);
 
-  // Resolve local visible index back to the global faqs index
   const globalIndex = (item: (typeof faqs)[0]) => faqs.indexOf(item);
 
   return (
@@ -118,81 +142,108 @@ export default function FAQ() {
       <div className="max-w-3xl mx-auto px-5">
         {/* Header */}
         <div className="text-center mb-12">
-          <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
-            Resolvemos tus dudas
-          </span>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4">
-            Preguntas frecuentes
-          </h2>
-          <p className="text-muted text-lg leading-relaxed">
-            Todo lo que necesitas saber sobre Nidoo antes de empezar.
-          </p>
+          <Reveal direction="up">
+            <span className="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block">
+              Resolvemos tus dudas
+            </span>
+          </Reveal>
+          <TextReveal
+            text="Las dudas que todos tienen (y sus respuestas)"
+            as="h2"
+            className="font-serif text-3xl md:text-4xl font-bold text-foreground text-balance mb-4"
+            delay={0.1}
+          />
+          <Reveal direction="up" delay={0.3}>
+            <p className="text-muted text-lg leading-relaxed">
+              {"Todo lo que necesitas saber antes de encontrar a tu roommate ideal."}
+            </p>
+          </Reveal>
         </div>
 
         {/* Category filter pills */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => {
-                setActiveCategory(cat);
-                setOpenIndex(null);
-              }}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                activeCategory === cat
-                  ? "bg-primary text-white shadow-primary-sm"
-                  : "bg-secondary border border-border text-muted hover:text-foreground hover:border-primary/30"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        <Reveal direction="up" delay={0.2}>
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {CATEGORIES.map((cat) => (
+              <motion.button
+                key={cat}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  setOpenIndex(null);
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                  activeCategory === cat
+                    ? "bg-primary text-white shadow-primary-sm"
+                    : "bg-secondary border border-border text-muted hover:text-foreground hover:border-primary/30"
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                layout
+              >
+                {cat}
+              </motion.button>
+            ))}
+          </div>
+        </Reveal>
 
         {/* Accordion list */}
-        <div className="flex flex-col gap-3 mb-12">
+        <Stagger className="flex flex-col gap-3 mb-12" stagger={0.08} key={activeCategory}>
           {visible.map((faq) => {
             const idx = globalIndex(faq);
             return (
-              <FAQItem
-                key={idx}
-                question={faq.question}
-                answer={faq.answer}
-                isOpen={openIndex === idx}
-                onToggle={() => toggle(idx)}
-              />
+              <motion.div key={idx} variants={staggerItem}>
+                <FAQItem
+                  question={faq.question}
+                  answer={faq.answer}
+                  isOpen={openIndex === idx}
+                  onToggle={() => toggle(idx)}
+                />
+              </motion.div>
             );
           })}
-        </div>
+        </Stagger>
 
         {/* Still have questions */}
-        <div className="bg-secondary rounded-2xl p-8 text-center border border-border">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <MessageCircle size={24} className="text-primary" aria-hidden="true" />
-          </div>
-          <h3 className="font-semibold text-xl text-foreground mb-2">
-            ¿Tienes más preguntas?
-          </h3>
-          <p className="text-muted mb-6 max-w-sm mx-auto text-sm leading-relaxed">
-            Nuestro equipo de soporte está disponible en español, lunes a domingo
-            de 8 am a 10 pm (hora CDMX).
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="/ayuda"
-              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-full transition-all shadow-primary-sm hover:shadow-primary-md hover:-translate-y-0.5 text-sm"
+        <Reveal direction="up" delay={0.1}>
+          <motion.div
+            className="bg-secondary rounded-2xl p-8 text-center border border-border"
+            whileHover={{ y: -4, transition: { type: "spring", stiffness: 200 } }}
+          >
+            <motion.div
+              className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"
+              whileHover={{ rotate: 360, transition: { duration: 0.6 } }}
             >
-              <HelpCircle size={16} aria-hidden="true" />
-              Centro de ayuda
-            </a>
-            <a
-              href="/contacto"
-              className="inline-flex items-center justify-center gap-2 bg-card hover:bg-secondary border border-border text-foreground font-semibold px-6 py-3 rounded-full transition-all text-sm"
-            >
-              Contactar soporte
-            </a>
-          </div>
-        </div>
+              <MessageCircle size={24} className="text-primary" aria-hidden="true" />
+            </motion.div>
+            <h3 className="font-semibold text-xl text-foreground mb-2">
+              {"\u00bfTienes m\u00e1s preguntas?"}
+            </h3>
+            <p className="text-muted mb-6 max-w-sm mx-auto text-sm leading-relaxed">
+              Nuestro equipo de soporte est\u00e1 disponible en espa\u00f1ol, lunes a domingo
+              de 8 am a 10 pm (hora CDMX).
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Magnetic strength={5}>
+                <motion.a
+                  href="/ayuda"
+                  className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-full transition-colors shadow-primary-sm text-sm"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <HelpCircle size={16} aria-hidden="true" />
+                  Centro de ayuda
+                </motion.a>
+              </Magnetic>
+              <motion.a
+                href="/contacto"
+                className="inline-flex items-center justify-center gap-2 bg-card hover:bg-secondary border border-border text-foreground font-semibold px-6 py-3 rounded-full transition-colors text-sm"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Contactar soporte
+              </motion.a>
+            </div>
+          </motion.div>
+        </Reveal>
       </div>
     </section>
   );

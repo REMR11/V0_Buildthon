@@ -15,9 +15,9 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "Nidoo — Encuentra tu habitación ideal",
+  title: "Nidoo \u2014 Encuentra tu roommate ideal y renta a la mitad",
   description:
-    "Nidoo conecta propietarios con habitaciones disponibles y estudiantes o trabajadores que buscan alojamiento accesible en América Latina. Confianza, contratos digitales y pagos seguros.",
+    "Nidoo te conecta con personas de gustos similares para compartir depa y dividir gastos en Am\u00e9rica Latina. Match por compatibilidad, perfiles verificados y ahorro real.",
 };
 
 export default function RootLayout({
@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      data-scroll-behavior="smooth"
       className={`${plusJakarta.variable} ${lora.variable} bg-background`}
     >
       <body className="min-h-full font-sans antialiased">{children}</body>
