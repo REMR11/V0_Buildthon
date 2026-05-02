@@ -7,7 +7,7 @@ import {
   ArrowLeft, ShieldCheck, BadgeCheck, Star, MapPin,
   MessageCircle, Heart, Calendar, Wifi, Clock,
   CheckCircle2, XCircle, ChevronRight, Video,
-  Smartphone, Globe, UserCheck, Home,
+  Smartphone, Globe, UserCheck, Home, Search, FileText,
 } from "lucide-react";
 import { mockListings, type Listing } from "@/lib/listings";
 import { getPrefs, type MatchPrefs } from "@/lib/match-prefs";
@@ -416,6 +416,31 @@ export default function MatchProfilePage() {
                 <p className="text-sm text-muted">{review.text}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── Buscar cuarto juntos (Flujo 2) ────────────────────── */}
+        <section className="mb-6 bg-primary/5 border border-primary/20 rounded-2xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-primary/15 rounded-xl flex items-center justify-center shrink-0">
+              <Search size={20} className="text-primary" />
+            </div>
+            <div className="flex-1">
+              <h2 className="font-serif text-base font-bold text-foreground mb-1">
+                {"Ya conectaron? Busquen cuarto juntos."}
+              </h2>
+              <p className="text-sm text-muted mb-4 leading-relaxed">
+                {"Si ya decidieron ser roommates, les mostramos cuartos dentro del presupuesto combinado de los dos."}
+              </p>
+              <Link
+                href={`/buscar-juntos/${id}`}
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-semibold px-5 py-2.5 rounded-full transition-colors text-sm"
+              >
+                <Search size={15} />
+                Buscar cuarto juntos
+                <ChevronRight size={14} />
+              </Link>
+            </div>
           </div>
         </section>
 
