@@ -251,8 +251,11 @@ export default function MapView(props: MapViewProps) {
         }
         .leaflet-container {
           font-family: inherit;
+          position: relative;
         }
       `}</style>
+      {/* position: relative is required by Leaflet to correctly calculate scroll offsets */}
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <MapContainer
         center={DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
@@ -265,6 +268,7 @@ export default function MapView(props: MapViewProps) {
         />
         <InnerMap {...props} />
       </MapContainer>
+      </div>
     </>
   );
 }
