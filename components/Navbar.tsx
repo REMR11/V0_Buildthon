@@ -9,7 +9,6 @@ const NAV_SECTIONS = [
   { id: "como-funciona", label: "C\u00f3mo funciona" },
   { id: "confianza", label: "Confianza" },
   { id: "habitaciones", label: "Habitaciones" },
-  { id: "ciudades", label: "Ciudades" },
 ];
 
 export default function Navbar() {
@@ -133,6 +132,9 @@ export default function Navbar() {
             >
               <Sparkles size={14} />
               Encontrar match
+            </Link>
+            <Link href="/ciudades" className="hover:text-primary transition-colors">
+              Ciudades
             </Link>
             <Link
               href="/explorar"
@@ -277,6 +279,13 @@ export default function Navbar() {
                   {label}
                 </motion.a>
               ))}
+              <Link
+                href="/ciudades"
+                onClick={() => setOpen(false)}
+                className="text-foreground/70 hover:text-primary transition-colors"
+              >
+                Ciudades
+              </Link>
               <Link
                 href="/match"
                 onClick={() => setOpen(false)}

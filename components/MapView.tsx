@@ -6,7 +6,7 @@ import L from "leaflet";
 import type { Listing } from "@/lib/listings";
 import "leaflet/dist/leaflet.css";
 
-const DEFAULT_CENTER: [number, number] = [13.7034, -89.224];
+const DEFAULT_CENTER: [number, number] = [13.6929, -89.2182];
 const DEFAULT_ZOOM = 13;
 
 const C = {
@@ -96,7 +96,7 @@ function makePopupHtml(listing: Listing) {
           <span style="font-size:12px;color:#f5a623;">${stars}</span>
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;">${amenityTags}</div>
-        <a href="/habitacion/${listing.id}" style="
+        <a href="/habitacion/${listing.slug}" style="
           display:block;
           text-align:center;
           background:${C.primary};
@@ -229,9 +229,19 @@ export interface MapViewProps {
   flyTarget: { lat: number; lng: number; zoom: number } | null;
   resetCenter: boolean;
   onResetDone: () => void;
+  initialLat?: number;
+  initialLng?: number;
+  initialZoom?: number;
 }
 
 export default function MapView(props: MapViewProps) {
+  const {
+    initialLat = DEFAULT_CENTER[0],
+    initialLng = DEFAULT_CENTER[1],
+    initialZoom = DEFAULT_ZOOM,
+    ...rest
+  } = props;
+
   return (
     <>
       <style>{`
@@ -257,8 +267,8 @@ export default function MapView(props: MapViewProps) {
       {/* position: relative is required by Leaflet to correctly calculate scroll offsets */}
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <MapContainer
-        center={DEFAULT_CENTER}
-        zoom={DEFAULT_ZOOM}
+        center={[initialLat, initialLng]}
+        zoom={initialZoom}
         style={{ width: "100%", height: "100%" }}
         zoomControl={false}
       >
@@ -266,7 +276,7 @@ export default function MapView(props: MapViewProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
-        <InnerMap {...props} />
+        <InnerMap {...rest} />
       </MapContainer>
       </div>
     </>
