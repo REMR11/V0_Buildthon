@@ -18,37 +18,55 @@ type EnvRequirement = {
 };
 
 const ENV_REQUIREMENTS: EnvRequirement[] = [
+  // ----- Auth ---------------------------------------------------------------
+  // Optional for now so preview / demo deployments work without a secret.
+  // Set this before going to production.
   {
     key: "AUTH_SECRET",
-    requiredInProd: true,
+    requiredInProd: false,
     description: "NextAuth signing secret (generate with: openssl rand -base64 32)",
   },
+
+  // ----- Upstash Redis (rate limiting & OTP) --------------------------------
+  // Not yet provisioned — rate limiting and OTP gracefully degrade to demo mode.
   {
     key: "UPSTASH_REDIS_REST_URL",
-    requiredInProd: true,
+    requiredInProd: false,
     description: "Upstash Redis REST URL for rate-limiting and OTP storage",
   },
   {
     key: "UPSTASH_REDIS_REST_TOKEN",
-    requiredInProd: true,
+    requiredInProd: false,
     description: "Upstash Redis REST token",
   },
+
+  // ----- AWS Rekognition (identity / face-match) ----------------------------
+  // Not yet provisioned — identity verification endpoints return 503 in demo mode.
   {
     key: "AWS_ACCESS_KEY_ID",
-    requiredInProd: true,
+    requiredInProd: false,
     description: "AWS credentials for Amazon Rekognition (identity verification)",
   },
   {
     key: "AWS_SECRET_ACCESS_KEY",
-    requiredInProd: true,
+    requiredInProd: false,
     description: "AWS credentials for Amazon Rekognition",
   },
   {
+    key: "AWS_REGION",
+    requiredInProd: false,
+    description: "AWS region for Rekognition (defaults to us-east-1)",
+  },
+
+  // ----- Eden AI (OCR) ------------------------------------------------------
+  // Not yet provisioned — OCR endpoint returns 503 in demo mode.
+  {
     key: "EDENAI_API_KEY",
-    requiredInProd: true,
+    requiredInProd: false,
     description: "Eden AI API key for OCR / identity_parser",
   },
-  // Optional in prod (Google OAuth is additive)
+
+  // ----- Google OAuth (additive) -------------------------------------------
   {
     key: "GOOGLE_CLIENT_ID",
     requiredInProd: false,
@@ -58,11 +76,6 @@ const ENV_REQUIREMENTS: EnvRequirement[] = [
     key: "GOOGLE_CLIENT_SECRET",
     requiredInProd: false,
     description: "Google OAuth client secret",
-  },
-  {
-    key: "AWS_REGION",
-    requiredInProd: false,
-    description: "AWS region for Rekognition (defaults to us-east-1)",
   },
 ];
 

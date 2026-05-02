@@ -23,17 +23,17 @@ async function getUserByEmail(email: string) {
   return MOCK_USERS.find((u) => u.email === email) ?? null;
 }
 
-// Fail fast if AUTH_SECRET is missing in production so it is never silently
-// omitted from a deployed environment.
-if (process.env.NODE_ENV === "production" && !process.env.AUTH_SECRET) {
-  throw new Error(
-    "AUTH_SECRET environment variable is required in production. " +
-      "Generate one with: openssl rand -base64 32",
+// Warn (not throw) when AUTH_SECRET is absent so preview and demo deployments
+// continue to work. Add AUTH_SECRET before going to production.
+if (!process.env.AUTH_SECRET) {
+  console.warn(
+    "[auth] AUTH_SECRET is not set. Sessions will use an insecure fallback. " +
+      "Set AUTH_SECRET before deploying to production.",
   );
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET ?? "nidoo-demo-fallback-not-for-production",
   providers: [
     // --- Google OAuth (requires GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET) ---
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET

@@ -72,10 +72,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // ---------------------------------------------------------------------------
-  // Standalone output makes Docker / serverless containers leaner
-  // ---------------------------------------------------------------------------
-  output: "standalone",
 };
 
 export default nextConfig;
