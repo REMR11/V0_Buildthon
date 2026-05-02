@@ -16,6 +16,7 @@ import {
 const rooms = [
   {
     id: 1,
+    slug: "habitacion-amplia-bano-privado-escalon",
     images: ["/images/rooms/room-1.jpg", "/images/rooms/room-2.jpg", "/images/rooms/room-3.jpg"],
     title: "Habitaci\u00f3n acogedora cerca del centro",
     type: "Habitaci\u00f3n privada en casa",
@@ -32,6 +33,7 @@ const rooms = [
   },
   {
     id: 2,
+    slug: "cuarto-soleado-zona-centrica",
     images: ["/images/rooms/room-2.jpg", "/images/rooms/room-4.jpg"],
     title: "Cuarto luminoso con escritorio",
     type: "Habitaci\u00f3n privada en departamento",
@@ -48,6 +50,7 @@ const rooms = [
   },
   {
     id: 3,
+    slug: "habitacion-casa-pareja-tranquila-antiguo",
     images: ["/images/rooms/room-3.jpg", "/images/rooms/room-5.jpg", "/images/rooms/room-1.jpg"],
     title: "Suite con ba\u00f1o privado",
     type: "Estudio independiente",
@@ -64,6 +67,7 @@ const rooms = [
   },
   {
     id: 4,
+    slug: "cuarto-independiente-entrada-propia-santa-elena",
     images: ["/images/rooms/room-4.jpg", "/images/rooms/room-6.jpg"],
     title: "Estudio compacto bien equipado",
     type: "Estudio independiente",
@@ -80,6 +84,7 @@ const rooms = [
   },
   {
     id: 5,
+    slug: "habitacion-luminosa-cerca-utec-colonia-medica",
     images: ["/images/rooms/room-5.jpg", "/images/rooms/room-1.jpg", "/images/rooms/room-3.jpg"],
     title: "Habitaci\u00f3n premium con balc\u00f3n",
     type: "Habitaci\u00f3n privada en casa",
@@ -96,6 +101,7 @@ const rooms = [
   },
   {
     id: 6,
+    slug: "cuarto-casa-familiar-san-benito",
     images: ["/images/rooms/room-6.jpg", "/images/rooms/room-2.jpg"],
     title: "Loft estilo industrial",
     type: "Estudio independiente",
@@ -142,8 +148,8 @@ function RoomCard({ room }: { room: typeof rooms[0] }) {
 
   return (
     <Link
-      href={`/habitacion/${room.id}`}
-      className="group bg-card rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-primary-md transition-all duration-300"
+      href={`/habitacion/${room.slug}`}
+      className="group bg-card rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-primary-md transition-all duration-300 hover:-translate-y-1"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

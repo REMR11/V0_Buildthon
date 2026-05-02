@@ -6,7 +6,10 @@ import {
   useRef,
   useCallback,
   useMemo,
+  Suspense,
 } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
   Search,
@@ -19,6 +22,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { mockListings, type Listing } from "@/lib/listings";
+import { cities, getCityBySlug } from "@/data/cities";
 
 // Leaflet must be loaded client-side only
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
@@ -36,6 +40,9 @@ const C = {
   teal: "#1a7a6a",
   tealBg: "#e8f4f1",
 };
+
+// Default center: geographic center of LATAM — used when clearing the city filter
+const LATAM_CENTER = { lat: 4.0, lng: -74.0, zoom: 4 };
 
 // ─── Filter chips ──────────────────────────────────────────────────────────────
 type FilterKey =
@@ -77,6 +84,20 @@ function applySearch(listings: Listing[], query: string): Listing[] {
   );
 }
 
+/** Convert a city name to a slug for comparison against the URL param */
+function cityToSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-");
+}
+
+function applyCity(listings: Listing[], citySlug: string | null): Listing[] {
+  if (!citySlug) return listings;
+  return listings.filter((l) => cityToSlug(l.city) === citySlug);
+}
+
 function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
   return (
     <span className="flex items-center gap-1 text-xs" style={{ color: C.muted }}>
@@ -97,7 +118,7 @@ function ListingCard({
   active: boolean;
   onClick: () => void;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     if (active && cardRef.current) {
@@ -106,7 +127,8 @@ function ListingCard({
   }, [active]);
 
   return (
-    <div
+    <Link
+      href={`/habitacion/${listing.slug}`}
       ref={cardRef}
       onClick={onClick}
       className="flex gap-3 rounded-2xl p-3 cursor-pointer transition-all"
@@ -117,6 +139,8 @@ function ListingCard({
           ? `0 0 0 3px ${C.primary}18`
           : "0 1px 4px rgba(44,26,14,0.06)",
         opacity: listing.available ? 1 : 0.7,
+        textDecoration: "none",
+        color: "inherit",
       }}
     >
       {/* Avatar placeholder */}
@@ -195,7 +219,7 @@ function ListingCard({
           ))}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -284,7 +308,7 @@ function BottomDrawer({
 
           {/* CTA */}
           <a
-            href={`/habitacion/${listing.id}`}
+            href={`/habitacion/${listing.slug}`}
             className="flex items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white transition-colors"
             style={{ background: C.primary }}
           >
@@ -296,18 +320,90 @@ function BottomDrawer({
   );
 }
 
-// ─── Main page ─────────────────────────────────────────────────────────────────
-export default function ExplorarPage() {
+// ─── Empty state for city filter ──────────────────────────────────────────────
+function EmptyCityState({ cityName }: { cityName: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <MapPin size={32} style={{ color: C.border }} className="mb-3" />
+      <p className="text-sm font-medium" style={{ color: C.foreground }}>
+        No hay habitaciones disponibles en {cityName} todavía
+      </p>
+      <p className="text-xs mt-1" style={{ color: C.muted }}>
+        Sé el primero en publicar una habitación aquí
+      </p>
+      <Link
+        href="/registro/propietario"
+        className="mt-4 text-sm font-medium"
+        style={{ color: C.primary }}
+      >
+        Publicar habitación →
+      </Link>
+    </div>
+  );
+}
+
+// ─── Skeleton shown during SSR / param resolution ──────────────────────────────
+function ExplorarSkeleton() {
+  return (
+    <div className="flex h-screen w-full">
+      <div
+        className="hidden md:flex flex-col flex-shrink-0 gap-3 p-4"
+        style={{ width: 380, borderRight: "1px solid #e2cbb5", background: "#fdf8f4" }}
+      >
+        <div className="h-5 w-48 rounded-md animate-pulse" style={{ background: "#e2cbb5" }} />
+        <div className="h-4 w-32 rounded-md animate-pulse" style={{ background: "#e2cbb5" }} />
+        <div className="flex gap-2 mt-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-7 w-20 rounded-full animate-pulse" style={{ background: "#e2cbb5" }} />
+          ))}
+        </div>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-36 w-full rounded-xl animate-pulse" style={{ background: "#e2cbb5" }} />
+        ))}
+      </div>
+      <div className="flex-1 animate-pulse" style={{ background: "#e2cbb5" }} />
+    </div>
+  );
+}
+
+// ─── Main page content (uses useSearchParams — must be inside Suspense) ─────────
+function ExplorarContent() {
+  const searchParams = useSearchParams();
+  const ciudadParam = searchParams.get("ciudad");
+  const latParam    = searchParams.get("lat");
+  const lngParam    = searchParams.get("lng");
+  const zoomParam   = searchParams.get("zoom");
+
+  // Resolve city display name from slug
+  const cityData = ciudadParam ? getCityBySlug(ciudadParam) : null;
+  const cityDisplayName = cityData?.name ?? ciudadParam ?? null;
+
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterKey>("Todos");
+  const [activeCity, setActiveCity] = useState<string | null>(ciudadParam);
   const [activeListing, setActiveListing] = useState<Listing | null>(null);
   const [flyTarget, setFlyTarget] = useState<{
     lat: number;
     lng: number;
     zoom: number;
-  } | null>(null);
+  } | null>(
+    latParam && lngParam
+      ? {
+          lat: parseFloat(latParam),
+          lng: parseFloat(lngParam),
+          zoom: zoomParam ? parseInt(zoomParam) : 13,
+        }
+      : null
+  );
   const [resetCenter, setResetCenter] = useState(false);
+
+  // Sync activeCity when URL param changes
+  useEffect(() => {
+    if (ciudadParam) {
+      setActiveCity(ciudadParam);
+    }
+  }, [ciudadParam]);
 
   // Debounce search 200ms
   useEffect(() => {
@@ -315,13 +411,19 @@ export default function ExplorarPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // Derived listings
+  // Derived listings — filter by city first, then other filters, then search
   const filtered = useMemo(() => {
-    const byFilter = applyFilter(mockListings, activeFilter);
+    const byCity   = applyCity(mockListings, activeCity);
+    const byFilter = applyFilter(byCity, activeFilter);
     return applySearch(byFilter, debouncedSearch);
-  }, [activeFilter, debouncedSearch]);
+  }, [activeCity, activeFilter, debouncedSearch]);
 
   const availableCount = filtered.filter((l) => l.available).length;
+
+  // Badge text changes based on active city
+  const badgeText = activeCity && cityDisplayName
+    ? `${availableCount} disponibles en ${cityDisplayName}`
+    : `${availableCount} disponibles ahora`;
 
   const handleCardClick = useCallback((listing: Listing) => {
     setActiveListing(listing);
@@ -338,11 +440,22 @@ export default function ExplorarPage() {
 
   const clearActive = () => setActiveListing(null);
 
+  const clearCityFilter = () => {
+    setActiveCity(null);
+    setActiveListing(null);
+    setFlyTarget(LATAM_CENTER);
+  };
+
+  // Initial map center: use URL params if present, else LATAM overview
+  const initialLat = latParam ? parseFloat(latParam) : LATAM_CENTER.lat;
+  const initialLng = lngParam ? parseFloat(lngParam) : LATAM_CENTER.lng;
+  const initialZoom = zoomParam ? parseInt(zoomParam) : LATAM_CENTER.zoom;
+
   return (
     <div className="flex flex-col" style={{ height: "100dvh", background: C.bg }}>
       <Navbar />
 
-      {/* Main content area — fills remaining height below nav (nav is ~65px fixed) */}
+      {/* Main content area */}
       <div
         className="flex flex-1 overflow-hidden"
         style={{ marginTop: 65 }}
@@ -365,10 +478,14 @@ export default function ExplorarPage() {
               className="font-serif font-bold text-xl leading-tight mb-0.5"
               style={{ color: C.foreground }}
             >
-              Habitaciones disponibles
+              {activeCity && cityDisplayName
+                ? `Habitaciones en ${cityDisplayName}`
+                : "Habitaciones disponibles"}
             </h1>
             <p className="text-xs" style={{ color: C.muted }}>
-              San Salvador y Antiguo Cuscatlan
+              {activeCity && cityData
+                ? `${cityData.name}, ${cityData.country}`
+                : "Toda Latinoamérica"}
             </p>
 
             {/* Search */}
@@ -453,10 +570,10 @@ export default function ExplorarPage() {
 
           {/* Cards */}
           <div className="flex-1 overflow-y-auto px-4 pb-4 flex flex-col gap-3">
-            {filtered.length === 0 ? (
-              <div
-                className="flex flex-col items-center justify-center py-16 text-center gap-2"
-              >
+            {filtered.length === 0 && activeCity && cityDisplayName ? (
+              <EmptyCityState cityName={cityDisplayName} />
+            ) : filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center gap-2">
                 <MapPin size={32} style={{ color: C.border }} />
                 <p className="text-sm font-medium" style={{ color: C.muted }}>
                   No se encontraron resultados
@@ -489,10 +606,13 @@ export default function ExplorarPage() {
               flyTarget={flyTarget}
               resetCenter={resetCenter}
               onResetDone={handleResetDone}
+              initialLat={initialLat}
+              initialLng={initialLng}
+              initialZoom={initialZoom}
             />
           </div>
 
-          {/* Overlay pill + center button */}
+          {/* Overlay badge + clear city + center button */}
           <div
             className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2"
             style={{ pointerEvents: "auto" }}
@@ -514,8 +634,25 @@ export default function ExplorarPage() {
                   boxShadow: `0 0 0 3px ${C.teal}30`,
                 }}
               />
-              {availableCount} disponibles ahora
+              {badgeText}
             </div>
+
+            {activeCity && (
+              <button
+                onClick={clearCityFilter}
+                className="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold shadow-lg transition-colors"
+                style={{
+                  background: C.primary,
+                  color: "#fff",
+                  border: `1.5px solid ${C.primary}`,
+                }}
+                aria-label="Limpiar filtro de ciudad"
+              >
+                <X size={13} />
+                Limpiar filtro
+              </button>
+            )}
+
             <button
               onClick={handleResetCenter}
               className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold shadow-lg transition-colors"
@@ -589,5 +726,14 @@ export default function ExplorarPage() {
         <BottomDrawer listing={activeListing} onClose={clearActive} />
       </div>
     </div>
+  );
+}
+
+// ─── Default export wraps content in Suspense ──────────────────────────────────
+export default function ExplorarPage() {
+  return (
+    <Suspense fallback={<ExplorarSkeleton />}>
+      <ExplorarContent />
+    </Suspense>
   );
 }

@@ -32,7 +32,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       // Tile servers for react-leaflet
-      "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://api.edenai.run",
+      "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://api.edenai.run https://images.unsplash.com",
       // API calls made from the browser
       "connect-src 'self' https://api.edenai.run https://*.upstash.io https://*.amazonaws.com",
       "frame-ancestors 'self'",
@@ -57,6 +57,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.tile.openstreetmap.org" },
       // Eden AI CDN (if document thumbnails are ever returned)
       { protocol: "https", hostname: "api.edenai.run" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 
