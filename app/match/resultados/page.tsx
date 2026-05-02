@@ -394,8 +394,8 @@ const personalityLabel: Record<string, string> = {
   introvertido: "Introvertido/a", ambivertido: "Ambivertido/a", extrovertido: "Extrovertido/a",
 };
 
-// ── Main page ─────────────────────────────────────────────────────────────────
-export default function MatchResultadosPage() {
+// ── Inner component (owns useSearchParams) ────────────────────────────────────
+function MatchResultadosInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -593,5 +593,27 @@ export default function MatchResultadosPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+// ── Page shell ────────────────────────────────────────────────────────────────
+// useSearchParams() requires a Suspense boundary during static generation.
+// This thin wrapper provides it so the build succeeds without changing any logic.
+import { Suspense } from "react";
+
+export default function MatchResultadosPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-4" />
+            <p className="text-muted text-sm">Calculando compatibilidad...</p>
+          </div>
+        </div>
+      }
+    >
+      <MatchResultadosInner />
+    </Suspense>
   );
 }

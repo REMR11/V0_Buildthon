@@ -1,3 +1,4 @@
+import "@/lib/env"; // validate required env vars at startup
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 
