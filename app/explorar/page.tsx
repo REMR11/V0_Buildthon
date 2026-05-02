@@ -480,8 +480,8 @@ export default function ExplorarPage() {
 
         {/* ── Map area ──────────────────────────────────────────────────────── */}
         <div className="relative flex-1 overflow-hidden">
-          {/* Map */}
-          <div style={{ width: "100%", height: "100%" }}>
+          {/* Map — position:relative required by Leaflet for correct scroll-offset calculation */}
+          <div style={{ position: "relative", width: "100%", height: "100%" }}>
             <MapView
               listings={filtered}
               activeListing={activeListing}
